@@ -1,0 +1,7 @@
+{
+  "name": "ProjectTracker",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react"
+}
