@@ -1,0 +1,6 @@
+{
+	"appId": "com.projecttrack.app",
+	"appName": "project-tracker",
+	"webDir": "build",
+	"bundledWebRuntime": false
+}
