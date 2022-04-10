@@ -1,5 +1,5 @@
 {
-	"appId": "com.projecttrack.app",
+	"appId": "au.projecttracker.app",
 	"appName": "project-tracker",
 	"webDir": "build",
 	"bundledWebRuntime": false

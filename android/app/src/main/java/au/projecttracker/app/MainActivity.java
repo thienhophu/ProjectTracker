@@ -1,4 +1,4 @@
-package com.projecttrack.app;
+package au.projecttracker.app;
 
 import com.getcapacitor.BridgeActivity;
 
