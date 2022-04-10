@@ -2,6 +2,7 @@ import { IonItem, IonLabel, IonNote } from "@ionic/react";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { Message } from "../data/messages";
 import { increment } from "../features/counter/counterSlice";
+import { add, remove } from "../features/projects/projectsSlice";
 import "./MessageListItem.css";
 
 interface MessageListItemProps {
@@ -14,10 +15,12 @@ const MessageListItem: React.FC<MessageListItemProps> = ({ message }) => {
 
   return (
     <IonItem
-      routerLink={`/message/${message.id}`}
+      // routerLink={`/message/${message.id}`}
       detail={false}
       onClick={() => {
         dispatch(increment());
+        dispatch(add({ id: "12312", name: "fasfa", progress: 20, steps: [] }));
+        dispatch(remove("123abc"));
       }}
     >
       <div slot="start" className="dot dot-unread"></div>
