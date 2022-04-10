@@ -1,5 +1,7 @@
 import { IonItem, IonLabel, IonNote } from "@ionic/react";
+import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { Message } from "../data/messages";
+import { increment } from "../features/counter/counterSlice";
 import "./MessageListItem.css";
 
 interface MessageListItemProps {
@@ -7,12 +9,21 @@ interface MessageListItemProps {
 }
 
 const MessageListItem: React.FC<MessageListItemProps> = ({ message }) => {
+  const count = useAppSelector((state) => state.counter.value);
+  const dispatch = useAppDispatch();
+
   return (
-    <IonItem routerLink={`/message/${message.id}`} detail={false}>
+    <IonItem
+      routerLink={`/message/${message.id}`}
+      detail={false}
+      onClick={() => {
+        dispatch(increment());
+      }}
+    >
       <div slot="start" className="dot dot-unread"></div>
       <IonLabel className="ion-text-wrap">
         <h2>
-          {message.fromName}
+          {message.fromName} {count}
           <span className="date">
             <IonNote>{message.date}</IonNote>
           </span>
