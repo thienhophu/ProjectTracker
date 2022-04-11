@@ -24,25 +24,29 @@ import "@ionic/react/css/display.css";
 import "./theme/variables.css";
 /* Tailwind variables */
 import "./theme/tailwind.css";
+import { Provider } from "react-redux";
+import { store } from "./app/store";
 
 setupIonicReact();
 
 const App: React.FC = () => (
-  <IonApp>
-    <IonReactRouter>
-      <IonRouterOutlet>
-        <Route path="/" exact={true}>
-          <Redirect to="/home" />
-        </Route>
-        <Route path="/home" exact={true}>
-          <Home />
-        </Route>
-        <Route path="/message/:id">
-          <ViewMessage />
-        </Route>
-      </IonRouterOutlet>
-    </IonReactRouter>
-  </IonApp>
+  <Provider store={store}>
+    <IonApp>
+      <IonReactRouter>
+        <IonRouterOutlet>
+          <Route path="/" exact={true}>
+            <Redirect to="/dashboard" />
+          </Route>
+          <Route path="/home" exact={true}>
+            <Home />
+          </Route>
+          <Route path="/message/:id">
+            <ViewMessage />
+          </Route>
+        </IonRouterOutlet>
+      </IonReactRouter>
+    </IonApp>
+  </Provider>
 );
 
 export default App;
