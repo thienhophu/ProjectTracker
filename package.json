@@ -13,6 +13,7 @@
     "@craco/craco": "^6.4.3",
     "@ionic/react": "^6.0.0",
     "@ionic/react-router": "^6.0.0",
+    "@reduxjs/toolkit": "^1.8.1",
     "@testing-library/jest-dom": "^5.11.9",
     "@testing-library/react": "^11.2.5",
     "@testing-library/user-event": "^12.6.3",
@@ -25,6 +26,7 @@
     "ionicons": "^5.4.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
+    "react-redux": "^7.2.8",
     "react-router": "^5.2.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "^5.0.0",
@@ -49,7 +51,8 @@
     "start": "TAILWIND_MODE=watch craco start",
     "build": "craco build",
     "ionic:serve": "TAILWIND_MODE=watch craco start",
-    "ionic:build": "craco build"
+    "ionic:build": "craco build",
+    "increase_version": "bundle exec fastlane ios increase_version && bundle exec fastlane android increase_version"
   },
   "eslintConfig": {
     "extends": [

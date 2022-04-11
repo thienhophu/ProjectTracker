@@ -2,7 +2,7 @@ import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'au.projecttracker.app',
-  appName: 'project-tracker',
+  appName: 'Project Tracker',
   webDir: 'build',
   bundledWebRuntime: false
 };
