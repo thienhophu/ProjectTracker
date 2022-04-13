@@ -16,6 +16,7 @@ import {
   IonToolbar,
 } from '@ionic/react';
 import { useCallback, useState } from 'react';
+import { GALLERY_PAGE } from '../../app/routes';
 import './styles.css';
 
 const Steps: React.FC = () => {
@@ -52,7 +53,7 @@ const Steps: React.FC = () => {
         <IonList>
           <IonReorderGroup disabled={!enableReorder} onIonItemReorder={doReorder}>
             {steps.map((step) => (
-              <IonItem key={step}>
+              <IonItem key={step} routerLink={GALLERY_PAGE}>
                 <IonThumbnail slot="start">
                   <IonImg src="https://www.linkpicture.com/q/mansion.jpg" />
                 </IonThumbnail>
