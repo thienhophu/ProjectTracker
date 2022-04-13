@@ -1,29 +1,17 @@
 import React from 'react';
 import {
-  IonContent,
-  IonPage,
-  useIonViewWillEnter
-} from "@ionic/react";
+  IonContent
+} from '@ionic/react';
 import ProjectCard from '../components/ProjectCard';
-import { useState } from "react";
-import { Projects, getProjects } from "../data/projects";
+import { projects } from '../data/projects';
 
 const Dashboard: React.FC = () => {
-  const [projects, setProjects] = useState<Projects[]>([]);
-
-  useIonViewWillEnter(() => {
-    const projs = getProjects();
-    setProjects(projs);
-  });
-
   return (
-    <IonPage id="home-page">
-      <IonContent fullscreen>
-      {projects.map((p) => (
-            <ProjectCard key={p.id} project={p} />
+    <IonContent fullscreen>
+      {projects.map((project) => (
+        <ProjectCard key={project.id} project={project} />
       ))}
-      </IonContent>
-    </IonPage>
+    </IonContent>
   );
 };
 

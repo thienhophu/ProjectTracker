@@ -1,11 +1,11 @@
-export interface Projects {
-  title: string;
-  imageUrl: string;
-  description: string;
+export interface Project {
   id: number;
+  imageUrl: string;
+  title: string;
+  description: string;
 }
 
-const projects: Projects[] = [
+const projects: Project[] = [
   {
     title: 'Matt Chorsey',
     imageUrl: 'https://www.linkpicture.com/q/mansion.jpg',
@@ -57,5 +57,4 @@ const projects: Projects[] = [
   }
 ];
 
-export const getProjects = () => projects;
-
+export {projects};

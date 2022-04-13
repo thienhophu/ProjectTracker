@@ -5,15 +5,15 @@ import {
   IonCardTitle,
   IonCardContent
 } from "@ionic/react";
-import { Projects } from "../data/projects";
+import { Project } from "../data/projects";
+
 interface ProjectCardProps {
-  project: Projects;
+  project: Project;
 }
 
 const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
-  
   return (
-    <IonCard button color={'white'} routerDirection = {'back'}>
+    <IonCard color='white'>
       <IonImg src={project.imageUrl} />
         <IonCardHeader>
           <IonCardTitle>{project.title}</IonCardTitle>
@@ -23,6 +23,6 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
         </IonCardContent>
       </IonCard>
   );
-};
+}; 
 
 export default ProjectCard;
