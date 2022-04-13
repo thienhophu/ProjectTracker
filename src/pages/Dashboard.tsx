@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   IonContent,
   IonToolbar,
@@ -8,9 +8,9 @@ import {
   IonLabel,
   IonButton,
   IonPage,
-} from "@ionic/react";
-import ProjectCard from "../components/ProjectCard";
-import { projects } from "../data/projects";
+} from '@ionic/react';
+import ProjectCard from '../components/ProjectCard';
+import { projects } from '../data/projects';
 
 const Dashboard: React.FC = () => {
   return (
