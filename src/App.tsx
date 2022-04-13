@@ -28,7 +28,9 @@ import "./theme/tailwind.css";
 import { Provider } from "react-redux";
 import { store } from "./app/store";
 
-setupIonicReact();
+setupIonicReact({
+  mode: "ios",
+});
 
 const App: React.FC = () => (
   <Provider store={store}>
