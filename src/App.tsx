@@ -1,8 +1,7 @@
 import { Redirect, Route } from "react-router-dom";
 import { IonApp, IonRouterOutlet, setupIonicReact } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
-import Home from "./pages/Home";
-import ViewMessage from "./pages/ViewMessage";
+import { Provider } from "react-redux";
 
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
@@ -24,8 +23,13 @@ import "@ionic/react/css/display.css";
 import "./theme/variables.css";
 /* Tailwind variables */
 import "./theme/tailwind.css";
-import { Provider } from "react-redux";
+
 import { store } from "./app/store";
+import Home from "./pages/Home";
+import ViewMessage from "./pages/ViewMessage";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import News from "./pages/News";
 
 setupIonicReact();
 
@@ -43,6 +47,9 @@ const App: React.FC = () => (
           <Route path="/message/:id">
             <ViewMessage />
           </Route>
+          <Route path="/login" component={Login} exact />
+          <Route path="/register" component={Register} exact />
+          <Route path="/news" component={News} exact />
         </IonRouterOutlet>
       </IonReactRouter>
     </IonApp>
