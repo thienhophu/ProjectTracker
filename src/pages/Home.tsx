@@ -2,6 +2,8 @@ import MessageListItem from "../components/MessageListItem";
 import { useState } from "react";
 import { Message, getMessages } from "../data/messages";
 import {
+  IonBackButton,
+  IonButtons,
   IonContent,
   IonHeader,
   IonItem,
@@ -37,6 +39,9 @@ const Home: React.FC = () => {
     <IonPage id="home-page">
       <IonHeader>
         <IonToolbar>
+          <IonButtons>
+            <IonBackButton />
+          </IonButtons>
           <IonTitle>Inbox</IonTitle>
         </IonToolbar>
       </IonHeader>
