@@ -1,6 +1,6 @@
-import MessageListItem from "../components/MessageListItem";
-import { useState } from "react";
-import { Message, getMessages } from "../data/messages";
+import MessageListItem from '../components/MessageListItem';
+import { useState } from 'react';
+import { Message, getMessages } from '../data/messages';
 import {
   IonBackButton,
   IonButtons,
@@ -15,14 +15,14 @@ import {
   IonTitle,
   IonToolbar,
   useIonViewWillEnter,
-} from "@ionic/react";
-import "./Home.css";
-import { useGetPokemonByNameQuery } from "../services/pokemon";
+} from '@ionic/react';
+import './Home.css';
+import { useGetPokemonByNameQuery } from '../services/pokemon';
 
 const Home: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   // Using a query hook automatically fetches data and returns query values
-  const { data } = useGetPokemonByNameQuery("bulbasaur");
+  const { data } = useGetPokemonByNameQuery('bulbasaur');
 
   useIonViewWillEnter(() => {
     const msgs = getMessages();
@@ -40,7 +40,7 @@ const Home: React.FC = () => {
       <IonHeader>
         <IonToolbar>
           <IonButtons>
-            <IonBackButton />
+            <IonBackButton defaultHref="\" />
           </IonButtons>
           <IonTitle>Inbox</IonTitle>
         </IonToolbar>
@@ -66,14 +66,12 @@ const Home: React.FC = () => {
               <IonLabel className="ion-text-wrap">
                 <h2>{data.name}</h2>
                 <p>
-                  Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed
-                  do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                  Ut enim ad minim veniam, quis nostrud exercitation ullamco
-                  laboris nisi ut aliquip ex ea commodo consequat. Duis aute
-                  irure dolor in reprehenderit in voluptate velit esse cillum
-                  dolore eu fugiat nulla pariatur. Excepteur sint occaecat
-                  cupidatat non proident, sunt in culpa qui officia deserunt
-                  mollit anim id est laborum.
+                  Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor
+                  incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
+                  exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute
+                  irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
+                  pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui
+                  officia deserunt mollit anim id est laborum.
                 </p>
               </IonLabel>
             </IonItem>

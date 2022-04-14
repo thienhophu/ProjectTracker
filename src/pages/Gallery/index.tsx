@@ -18,7 +18,7 @@ const Gallery = () => {
       <IonHeader>
         <IonToolbar>
           <IonButtons slot="start">
-            <IonBackButton />
+            <IonBackButton defaultHref="\" />
           </IonButtons>
           <IonTitle>Gallery</IonTitle>
         </IonToolbar>

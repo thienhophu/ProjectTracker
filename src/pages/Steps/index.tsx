@@ -41,7 +41,7 @@ const Steps: React.FC = () => {
       <IonHeader>
         <IonToolbar>
           <IonButtons slot="start">
-            <IonBackButton />
+            <IonBackButton defaultHref="\" />
           </IonButtons>
           <IonTitle>Steps</IonTitle>
           <IonButtons slot="end">
