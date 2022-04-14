@@ -41,7 +41,7 @@ const App: React.FC = () => (
           <Route path="/dashboard" component={Dashboard} />
           <Redirect exact from="/" to="/dashboard" />
 
-          <Route path="/createProject" component={CreateProject} />
+          <Route exact path="/createProject" component={CreateProject} />
 
           <Route path="/home" exact={true}>
             <Home />
