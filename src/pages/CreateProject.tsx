@@ -34,7 +34,7 @@ const CreateProject: React.FC = () => {
   const onChangeProjectDecriptionInput = (event:any) => setProjectDescription(event.detail.value || '')
 
 
-  const createNewProject = () => {
+   const createNewProject = () => {
     dispatch(
       add({
         id: '12312',
@@ -44,8 +44,8 @@ const CreateProject: React.FC = () => {
         steps: [],
       }),
     );
-      goBack();
-      clearAllFields();
+    clearAllFields();
+    goBack();
   }
   
   return (
