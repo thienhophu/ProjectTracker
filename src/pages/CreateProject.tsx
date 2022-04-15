@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useAppDispatch } from '../app/hooks';
 import { add } from '../features/projects/projectsSlice';
 import { useHistory } from 'react-router-dom';
-import { DASHBOARD_PAGE } from '../app/routes';
 import {
   IonContent,
   IonToolbar,
@@ -17,19 +16,23 @@ import {
   IonTextarea,
   IonButton,
   IonPage,
-  useIonViewWillEnter
 } from '@ionic/react';
 
 const CreateProject: React.FC = () => {
   const [projectName, setProjectName] = useState<string>('');
   const [projectDescription, setProjectDescription] = useState<string>('');
   const dispatch = useAppDispatch();
-  const history = useHistory();
+  const {goBack} = useHistory();
 
-  useIonViewWillEnter(() => {
+  const clearAllFields = () => {
     setProjectName('');
     setProjectDescription('');
-  });
+  }
+
+  const onChangeProjectNameInput = (event:any) => setProjectName(event.detail.value || '')
+
+  const onChangeProjectDecriptionInput = (event:any) => setProjectDescription(event.detail.value || '')
+
 
   const createNewProject = () => {
     dispatch(
@@ -41,7 +44,8 @@ const CreateProject: React.FC = () => {
         steps: [],
       }),
     );
-      history.push(DASHBOARD_PAGE);
+      goBack();
+      clearAllFields();
   }
   
   return (
@@ -67,7 +71,7 @@ const CreateProject: React.FC = () => {
             <IonLabel position='stacked'>Project's name</IonLabel>
             <IonInput
               value={projectName}
-              onIonChange={(event) => setProjectName(event.detail.value || '')}
+              onIonChange={onChangeProjectNameInput}
             ></IonInput>
           </IonItem>
           
@@ -76,7 +80,7 @@ const CreateProject: React.FC = () => {
             <IonTextarea
               auto-grow
               value={projectDescription}
-              onIonChange={(event) => setProjectDescription(event.detail.value || '')}
+              onIonChange={onChangeProjectDecriptionInput}
             ></IonTextarea>
           </IonItem>
         </IonList>

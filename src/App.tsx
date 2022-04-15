@@ -29,7 +29,7 @@ import { Provider } from 'react-redux';
 import { store } from './app/store';
 import Steps from './pages/Steps';
 import CreateProject from './pages/CreateProject';
-import { DASHBOARD_PAGE, GALLERY_PAGE, STEPS_PAGE } from './app/routes';
+import { DASHBOARD_PAGE, GALLERY_PAGE, STEPS_PAGE, CREATE_PROJECT, HOME} from './app/routes';
 import Gallery from './pages/Gallery';
 
 setupIonicReact({
@@ -42,8 +42,8 @@ const App: React.FC = () => (
       <IonReactRouter>
         <IonRouterOutlet>
           <Route exact path={DASHBOARD_PAGE} component={Dashboard} />
-          <Route exact path='/createProject' component={CreateProject} />
-          <Route exact path='/home' component={Home} />
+          <Route exact path={CREATE_PROJECT} component={CreateProject} />
+          <Route exact path={HOME} component={Home} />
           <Route exact path={DASHBOARD_PAGE} component={Dashboard} />
           <Route exact path={STEPS_PAGE} component={Steps} />
           <Route exact path={GALLERY_PAGE} component={Gallery} />
