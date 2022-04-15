@@ -19,7 +19,7 @@ const MessageListItem: React.FC<MessageListItemProps> = ({ message }) => {
       detail={false}
       onClick={() => {
         dispatch(increment());
-        dispatch(add({ id: "12312", name: "fasfa", progress: 20, steps: [] }));
+        dispatch(add({ id: "12312", name: "fasfa", description: "description", progress: 20, steps: [] }));
         // dispatch(remove("123abc"));
       }}
     >

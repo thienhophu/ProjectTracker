@@ -1,4 +1,5 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 import {
   IonContent,
   IonToolbar,
@@ -10,9 +11,12 @@ import {
   IonPage,
 } from '@ionic/react';
 import ProjectCard from '../components/ProjectCard';
-import { projects } from '../data/projects';
+import {Project, getProjectsIds } from '../features/projects/projectsSlice';
+import { CREATE_PROJECT} from '../app/routes';
 
 const Dashboard: React.FC = () => {
+  const data = useSelector(getProjectsIds);
+
   return (
     <IonPage>
       <IonHeader>
@@ -20,7 +24,7 @@ const Dashboard: React.FC = () => {
           <IonTitle>Project Tracker</IonTitle>
 
           <IonButtons slot="end">
-            <IonButton routerLink="/createProject">
+            <IonButton routerLink={CREATE_PROJECT}>
               <IonLabel>Create</IonLabel>
             </IonButton>
           </IonButtons>
@@ -28,8 +32,9 @@ const Dashboard: React.FC = () => {
       </IonHeader>
 
       <IonContent fullscreen>
-        {projects.map((project) => (
-          <ProjectCard key={project.id} project={project} />
+        {data &&
+          data.map((project: Project, index: number) => (
+            <ProjectCard key={index} project={project} />
         ))}
       </IonContent>
     </IonPage>
