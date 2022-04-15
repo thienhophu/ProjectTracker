@@ -33,7 +33,6 @@ const CreateProject: React.FC = () => {
 
   const onChangeProjectDecriptionInput = (event:any) => setProjectDescription(event.detail.value || '')
 
-
    const createNewProject = () => {
     dispatch(
       add({
