@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect , useContext} from "react";
+import { ReactReduxContext } from 'react-redux';
 import { Message, getMessage } from "../data/messages";
 import {
   IonBackButton,
@@ -16,9 +17,10 @@ import {
 import { personCircle } from "ionicons/icons";
 
 const News: React.FC = () => {
-  useEffect(() => {
-    const firestore = getFirestore();
-    firestore.get('todos');
+  const { store } = useContext(ReactReduxContext);
+
+  useIonViewWillEnter(() => {
+    store.firestore.get('posts');
   });
 
   return (
@@ -32,7 +34,7 @@ const News: React.FC = () => {
       </IonHeader>
 
       <IonContent fullscreen>
-        {message ? (
+        {/* {message ? (
           <>
             <IonItem>
               <IonIcon icon={personCircle} color="primary"></IonIcon>
@@ -64,7 +66,7 @@ const News: React.FC = () => {
           </>
         ) : (
           <div>Message not found</div>
-        )}
+        )} */}
       </IonContent>
     </IonPage>
   );
