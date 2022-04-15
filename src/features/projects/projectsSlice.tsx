@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export interface Step {
   id: string;
@@ -9,6 +9,7 @@ export interface Step {
 export interface Project {
   id: string;
   name: string;
+  description: string;
   progress: number;
   steps: Array<Step>;
 }
@@ -20,20 +21,21 @@ export interface ProjectsState {
 const initialState: ProjectsState = {
   ids: [
     {
-      id: "123abc",
-      name: "Demo Project",
+      id: '123abc',
+      name: 'Demo Project',
+      description: 'demo description',
       progress: 0,
       steps: [
-        { id: "step01", name: "Step 1", isCompleted: false },
-        { id: "step02", name: "Step 2", isCompleted: false },
-        { id: "step03", name: "Step 3", isCompleted: false },
+        { id: 'step01', name: 'Step 1', isCompleted: false },
+        { id: 'step02', name: 'Step 2', isCompleted: false },
+        { id: 'step03', name: 'Step 3', isCompleted: false },
       ],
     },
   ],
 };
 
 export const projectsSlice = createSlice({
-  name: "projects",
+  name: 'projects',
   initialState,
   reducers: {
     add: (state, action: PayloadAction<Project>) => {
@@ -42,32 +44,23 @@ export const projectsSlice = createSlice({
     remove: (state, action: PayloadAction<string>) => {
       state.ids = state.ids.filter((project) => project.id !== action.payload);
     },
-    addStep: (
-      state,
-      action: PayloadAction<{ projectId: string; step: Step }>
-    ) => {
+    addStep: (state, action: PayloadAction<{ projectId: string; step: Step }>) => {
       const projectIndex = state.ids.findIndex(
-        (project) => project.id === action.payload.projectId
+        (project) => project.id === action.payload.projectId,
       );
-      state.ids[projectIndex].steps = [
-        ...state.ids[projectIndex].steps,
-        action.payload.step,
-      ];
+      state.ids[projectIndex].steps = [...state.ids[projectIndex].steps, action.payload.step];
     },
-    removeStep: (
-      state,
-      action: PayloadAction<{ projectId: string; id: string }>
-    ) => {
-      const projectIndex = state.ids.findIndex(
-        (project) => project.id === action.payload.id
-      );
+    removeStep: (state, action: PayloadAction<{ projectId: string; id: string }>) => {
+      const projectIndex = state.ids.findIndex((project) => project.id === action.payload.id);
       state.ids[projectIndex].steps = state.ids[projectIndex].steps.filter(
-        (step) => step.id !== action.payload.id
+        (step) => step.id !== action.payload.id,
       );
     },
   },
 });
 
 export const { add, remove, addStep, removeStep } = projectsSlice.actions;
+
+export const getProjectsIds = (state: any) => state.projects.ids;
 
 export default projectsSlice.reducer;

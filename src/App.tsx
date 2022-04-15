@@ -42,24 +42,14 @@ const App: React.FC = () => (
       <IonReactRouter>
         <IonRouterOutlet>
           <Route exact path={DASHBOARD_PAGE} component={Dashboard} />
-          <Route exact path="/createProject" component={CreateProject} />
-          <Route exact path="/home">
-            <Home />
-          </Route>
-          <Route exact path={DASHBOARD_PAGE}>
-            <Dashboard />
-          </Route>
-          <Route exact path={STEPS_PAGE}>
-            <Steps />
-          </Route>
-          <Route exact path={GALLERY_PAGE}>
-            <Gallery />
-          </Route>
-          <Route path="/message/:id">
-            <ViewMessage />
-          </Route>
+          <Route exact path='/createProject' component={CreateProject} />
+          <Route exact path='/home' component={Home} />
+          <Route exact path={DASHBOARD_PAGE} component={Dashboard} />
+          <Route exact path={STEPS_PAGE} component={Steps} />
+          <Route exact path={GALLERY_PAGE} component={Gallery} />
+          <Route path='/message/:id' component={ViewMessage} />
 
-          <Redirect exact from="/" to={DASHBOARD_PAGE} />
+          <Redirect exact from='/' to={DASHBOARD_PAGE} />
         </IonRouterOutlet>
       </IonReactRouter>
     </IonApp>
