@@ -66,6 +66,70 @@ const Gallery = () => {
               <IonImg src="https://www.linkpicture.com/q/mansion.jpg" />
             </IonCol>
           </IonRow>
+          <IonRow>
+            <IonCol>
+              <IonImg src="https://www.linkpicture.com/q/mansion.jpg" />
+            </IonCol>
+            <IonCol>
+              <IonImg src="https://www.linkpicture.com/q/mansion.jpg" />
+            </IonCol>
+          </IonRow>
+          <IonRow>
+            <IonCol>
+              <IonImg src="https://www.linkpicture.com/q/mansion.jpg" />
+            </IonCol>
+            <IonCol>
+              <IonImg src="https://www.linkpicture.com/q/mansion.jpg" />
+            </IonCol>
+          </IonRow>
+          <IonRow>
+            <IonCol>
+              <IonImg src="https://www.linkpicture.com/q/mansion.jpg" />
+            </IonCol>
+            <IonCol>
+              <IonImg src="https://www.linkpicture.com/q/mansion.jpg" />
+            </IonCol>
+          </IonRow>
+          <IonRow>
+            <IonCol>
+              <IonImg src="https://www.linkpicture.com/q/mansion.jpg" />
+            </IonCol>
+            <IonCol>
+              <IonImg src="https://www.linkpicture.com/q/mansion.jpg" />
+            </IonCol>
+          </IonRow>
+          <IonRow>
+            <IonCol>
+              <IonImg src="https://www.linkpicture.com/q/mansion.jpg" />
+            </IonCol>
+            <IonCol>
+              <IonImg src="https://www.linkpicture.com/q/mansion.jpg" />
+            </IonCol>
+          </IonRow>
+          <IonRow>
+            <IonCol>
+              <IonImg src="https://www.linkpicture.com/q/mansion.jpg" />
+            </IonCol>
+            <IonCol>
+              <IonImg src="https://www.linkpicture.com/q/mansion.jpg" />
+            </IonCol>
+          </IonRow>
+          <IonRow>
+            <IonCol>
+              <IonImg src="https://www.linkpicture.com/q/mansion.jpg" />
+            </IonCol>
+            <IonCol>
+              <IonImg src="https://www.linkpicture.com/q/mansion.jpg" />
+            </IonCol>
+          </IonRow>
+          <IonRow>
+            <IonCol>
+              <IonImg src="https://www.linkpicture.com/q/mansion.jpg" />
+            </IonCol>
+            <IonCol>
+              <IonImg src="https://www.linkpicture.com/q/mansion.jpg" />
+            </IonCol>
+          </IonRow>
         </IonGrid>
       </IonContent>
     </IonPage>

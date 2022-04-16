@@ -52,7 +52,8 @@
     "build": "craco build",
     "ionic:serve": "TAILWIND_MODE=watch craco start",
     "ionic:build": "craco build",
-    "increase_version": "bundle exec fastlane ios increase_version && bundle exec fastlane android increase_version"
+    "increase_version": "bundle exec fastlane ios increase_version && bundle exec fastlane android increase_version",
+    "release-android-firebase": "ionic cap sync && npm run increase_version && bundle exec fastlane android firebase "
   },
   "eslintConfig": {
     "extends": [
