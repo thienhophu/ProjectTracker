@@ -31,29 +31,35 @@ import Steps from './pages/Steps';
 import CreateProject from './pages/CreateProject';
 import { DASHBOARD_PAGE, GALLERY_PAGE, STEPS_PAGE, CREATE_PROJECT, HOME} from './app/routes';
 import Gallery from './pages/Gallery';
+import { FirebaseAppProvider } from 'reactfire';
+import { config as firebaseConfig } from './app/firebaseConfig';
+import Test from './pages/Test';
 
 setupIonicReact({
   mode: 'ios',
 });
 
 const App: React.FC = () => (
-  <Provider store={store}>
-    <IonApp>
-      <IonReactRouter>
-        <IonRouterOutlet>
-          <Route exact path={DASHBOARD_PAGE} component={Dashboard} />
-          <Route exact path={CREATE_PROJECT} component={CreateProject} />
-          <Route exact path={HOME} component={Home} />
-          <Route exact path={DASHBOARD_PAGE} component={Dashboard} />
-          <Route exact path={STEPS_PAGE} component={Steps} />
-          <Route exact path={GALLERY_PAGE} component={Gallery} />
-          <Route path='/message/:id' component={ViewMessage} />
+  <FirebaseAppProvider firebaseConfig={firebaseConfig}>
+    <Provider store={store}>
+      <IonApp>
+        <IonReactRouter>
+          <IonRouterOutlet>
+            <Route exact path={DASHBOARD_PAGE} component={Dashboard} />
+            <Route exact path={CREATE_PROJECT} component={CreateProject} />
+            <Route exact path={HOME} component={Home} />
+            <Route exact path={DASHBOARD_PAGE} component={Dashboard} />
+            <Route exact path={STEPS_PAGE} component={Steps} />
+            <Route exact path={GALLERY_PAGE} component={Gallery} />
+            <Route path='/message/:id' component={ViewMessage} />
 
-          <Redirect exact from='/' to={DASHBOARD_PAGE} />
-        </IonRouterOutlet>
-      </IonReactRouter>
-    </IonApp>
-  </Provider>
+            <Route exact path={'/test'} component={Test} />
+            <Redirect exact from='/' to={DASHBOARD_PAGE} />
+          </IonRouterOutlet>
+        </IonReactRouter>
+      </IonApp>
+    </Provider>
+  </FirebaseAppProvider>
 );
 
 export default App;
