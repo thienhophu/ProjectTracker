@@ -1,11 +1,12 @@
 import { configureStore } from "@reduxjs/toolkit";
-
+import authSlice from "../features/auth/authSlice";
 import counterSlice from "../features/counter/counterSlice";
 import projectsSlice from "../features/projects/projectsSlice";
 import { pokemonApi } from "../services/pokemon";
 
 export const store = configureStore({
   reducer: {
+    auth: authSlice,
     counter: counterSlice,
     projects: projectsSlice,
     // Add the generated reducer as a specific top-level slice

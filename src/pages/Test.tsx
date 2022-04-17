@@ -1,8 +1,8 @@
 import { IonPage } from '@ionic/react';
-import { getFirestore, collection } from 'firebase/firestore';
-import { useFirebaseApp, useFirestoreCollectionData, useFirestore, FirestoreProvider } from 'reactfire';
+import { collection } from 'firebase/firestore';
+import { useFirestoreCollectionData, useFirestore } from 'reactfire';
 
-const TestChild: React.FC = () => {
+const Test: React.FC = () => {
   // easily access the Firestore library
    // set up query
    const firestore = useFirestore();
@@ -15,17 +15,12 @@ const TestChild: React.FC = () => {
 
   return (
   <IonPage>
-    {data.map((animal) => (
+    {data && data.map((animal) => (
     <li key={animal.id}>{animal.name}</li>
   ))}
   </IonPage>
   );
 };
 
-const Test: React.FC = () => {
-  const firestore = getFirestore(useFirebaseApp());
-
-  return <FirestoreProvider sdk={firestore}><TestChild></TestChild></FirestoreProvider>;
-};
 
 export default Test;
