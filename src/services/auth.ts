@@ -1,4 +1,4 @@
-import { useAuth as auth } from "reactfire";
+import { auth } from "../app/firebaseConfig";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -8,17 +8,17 @@ import {
 import { LOGIN, LOGOUT, REGISTER, SET_INITIALIZED } from "../features/auth/authSlice";
 
 export const setAuthListener = () => (dispatch: any, state: any) => {
-  onAuthStateChanged(auth(), (user) => {
+  onAuthStateChanged(auth, (user) => {
     if (user && !state().auth.initialized) {
-      dispatch(LOGIN({ user: auth()?.currentUser?.toJSON() }))
+      dispatch(LOGIN({ user: auth?.currentUser?.toJSON() }))
     }
 
     !state().auth.initialized && dispatch(SET_INITIALIZED(true));
   });
 }
 
-export const login = ({ username, password }: any) => async (dispatch: any, state: any) => {
-  await signInWithEmailAndPassword(auth(), username, password)
+export const login = (username: string, password: string) => async (dispatch: any, state: any) => {
+  await signInWithEmailAndPassword(auth, username, password)
   .then((userCredential) => {
     // Signed in 
     dispatch(LOGIN({ user: userCredential.user.toJSON() }));
@@ -31,7 +31,7 @@ export const login = ({ username, password }: any) => async (dispatch: any, stat
 }
 
 export const logout = () => async (dispatch: any) => {
-  await signOut(auth()).then(() => {
+  await signOut(auth).then(() => {
     // Sign-out successful.
     dispatch(LOGOUT())
   }).catch((error) => {
@@ -41,7 +41,7 @@ export const logout = () => async (dispatch: any) => {
 }
 
 export const register = (username: string, password: string) => async (dispatch: any) =>  {
-  await createUserWithEmailAndPassword(auth(), username, password)
+  await createUserWithEmailAndPassword(auth, username, password)
     .then((userCredential) => {
       dispatch(REGISTER({ user: userCredential.user.toJSON() }));
     })

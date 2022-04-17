@@ -34,6 +34,8 @@ import Gallery from './pages/Gallery';
 import Test from './pages/Test';
 import { getFirestore } from 'firebase/firestore';
 import { useFirebaseApp, FirestoreProvider } from 'reactfire';
+import Login from "./pages/Login";
+import Register from "./pages/Register";
 
 setupIonicReact({
   mode: 'ios',
@@ -55,7 +57,8 @@ const App: React.FC = () => {
               <Route exact path={STEPS_PAGE} component={Steps} />
               <Route exact path={GALLERY_PAGE} component={Gallery} />
               <Route path='/message/:id' component={ViewMessage} />
-
+              <Route path="/login" component={Login} />
+              <Route path="/register" component={Register} />
               <Route exact path={'/test'} component={Test} />
               <Redirect exact from='/' to={DASHBOARD_PAGE} />
             </IonRouterOutlet>
