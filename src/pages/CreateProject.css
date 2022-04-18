@@ -1,0 +1,7 @@
+.create-project-button {
+  -webkit-appearance: none !important;
+}
+
+.error-message {
+  color: #bf1650;
+}

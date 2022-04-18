@@ -19,23 +19,49 @@ import {
   IonButton,
   IonPage,
 } from '@ionic/react';
+import './CreateProject.css';
 
 const CreateProject: React.FC = () => {
   const [projectName, setProjectName] = useState<string>('');
   const [projectDescription, setProjectDescription] = useState<string>('');
   const dispatch = useAppDispatch();
   const { goBack } = useHistory();
-  const {handleSubmit} = useForm();
 
-  const clearAllFields = () => {
-    setProjectName('');
-    setProjectDescription('');
+  interface FormValues {
+    projectName: string;
+    projectDescription: string;
   };
 
-  const onChangeProjectNameInput = (event: any) => setProjectName(event.detail.value || '');
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormValues>({
+    defaultValues: {
+      projectName: '',
+      projectDescription: ''
+    }
+  });
 
-  const onChangeProjectDecriptionInput = (event: any) =>
+  const projectNameProp = {...register('projectName', {
+    required: "Project's name is required."
+  })}
+
+  const projectDescriptionProp = {...register('projectDescription', {
+    required: "Project's description is required."
+  })}
+
+  const onSubmit = handleSubmit(() => createNewProject());
+
+  const onChangeProjectNameInput = (event: any) => {
+    errors.projectName = undefined;
+    setProjectName(event.detail.value || '')
+  };
+
+  const onChangeProjectDecriptionInput = (event: any) => {
+    errors.projectDescription = undefined;
     setProjectDescription(event.detail.value || '');
+  }
 
   const createNewProject = () => {
     dispatch(
@@ -47,13 +73,19 @@ const CreateProject: React.FC = () => {
         steps: [],
       }),
     );
-    clearAllFields();
     goBack();
   };
 
+  const showError = (fieldName: string) => {
+    let error = (errors as any)[fieldName];
+    return error ? (
+      <p className ='error-message'>{error.message}</p>
+    ) : null;
+  }
+ 
   return (
     <IonPage>
-      <form onSubmit={handleSubmit(createNewProject)}>
+      <form onSubmit={onSubmit}>
         <IonHeader>
           <IonToolbar>
             <IonTitle>Project Tracker</IonTitle>
@@ -62,8 +94,8 @@ const CreateProject: React.FC = () => {
             </IonButtons>
 
             <IonButtons slot='end'>
-              <IonButton>
-                <input type='submit' value='Create' />
+              <IonButton class='create-project-button' type='submit'>
+                Create
               </IonButton>
             </IonButtons>
           </IonToolbar>
@@ -74,20 +106,20 @@ const CreateProject: React.FC = () => {
             <IonItem>
               <IonLabel position='stacked'>Project's name</IonLabel>
               <IonInput
-                required
-                value={projectName}
-                onIonChange={onChangeProjectNameInput}
-              ></IonInput>
+                {...projectNameProp}
+                onIonChange={onChangeProjectNameInput}>
+              </IonInput>
+              {showError('projectName')}
             </IonItem>
 
             <IonItem>
               <IonLabel position='stacked'>Project's Description</IonLabel>
               <IonTextarea
-                required
+                {...projectDescriptionProp}
                 auto-grow
-                value={projectDescription}
-                onIonChange={onChangeProjectDecriptionInput}
-              ></IonTextarea>
+                onIonChange={onChangeProjectDecriptionInput}>
+              </IonTextarea>
+              {showError('projectDescription')}
             </IonItem>
           </IonList>
         </IonContent>
