@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useAppDispatch } from '../app/hooks';
 import { add } from '../features/projects/projectsSlice';
 import { useHistory } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
 
 import {
   IonContent,
@@ -19,51 +18,62 @@ import {
   IonButton,
   IonPage,
 } from '@ionic/react';
-import './CreateProject.css';
 
 const CreateProject: React.FC = () => {
   const [projectName, setProjectName] = useState<string>('');
   const [projectDescription, setProjectDescription] = useState<string>('');
+  const [projectNameError, setProjectNameError] = useState<boolean>(false);
+  const [projectDescriptionError, setProjectDescriptionError] = useState<boolean>(false);
+
   const dispatch = useAppDispatch();
   const { goBack } = useHistory();
 
-  interface FormValues {
-    projectName: string;
-    projectDescription: string;
-  };
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<FormValues>({
-    defaultValues: {
-      projectName: '',
-      projectDescription: ''
-    }
-  });
-
-  const projectNameProp = {...register('projectName', {
-    required: "Project's name is required."
-  })}
-
-  const projectDescriptionProp = {...register('projectDescription', {
-    required: "Project's description is required."
-  })}
-
-  const onSubmit = handleSubmit(() => createNewProject());
-
   const onChangeProjectNameInput = (event: any) => {
-    errors.projectName = undefined;
-    setProjectName(event.detail.value || '')
+    setProjectNameError(false);
+    setProjectName(event.detail.value || '');
   };
 
   const onChangeProjectDecriptionInput = (event: any) => {
-    errors.projectDescription = undefined;
+    setProjectDescriptionError(false);
     setProjectDescription(event.detail.value || '');
+  };
+
+  const clearAllFields = () => {
+    setProjectName('');
+    setProjectDescription('');
+  };
+
+  const showNameError = () =>
+    projectNameError === true ? <p className="error-message">Project's name is required</p> : null;
+
+  const showDescriptionError = () =>
+    projectDescriptionError === true ? (
+      <p className="error-message">Project's description is required</p>
+    ) : null;
+
+  const checkNameValue = () => {
+    if (projectName === '') {
+      setProjectNameError(true);
+      return true;
+    }
+    return false;
+  }
+  const checkDescriptionValue = () => {
+    if (projectDescription === '') {
+      setProjectDescriptionError(true);
+      return true;
+    }
+    return false;
   }
 
   const createNewProject = () => {
+    let isNameValue = checkNameValue();
+    let isDescriptionValue = checkDescriptionValue();
+    
+    if (isNameValue || isDescriptionValue) {
+      return;
+    }
+
     dispatch(
       add({
         id: '12312',
@@ -73,57 +83,40 @@ const CreateProject: React.FC = () => {
         steps: [],
       }),
     );
+    clearAllFields();
     goBack();
   };
 
-  const showError = (fieldName: string) => {
-    let error = (errors as any)[fieldName];
-    return error ? (
-      <p className ='error-message'>{error.message}</p>
-    ) : null;
-  }
- 
   return (
     <IonPage>
-      <form onSubmit={onSubmit}>
-        <IonHeader>
-          <IonToolbar>
-            <IonTitle>Project Tracker</IonTitle>
-            <IonButtons slot='start'>
-              <IonBackButton defaultHref='\' />
-            </IonButtons>
+      <IonHeader>
+        <IonToolbar>
+          <IonTitle>Project Tracker</IonTitle>
+          <IonButtons slot="start">
+            <IonBackButton defaultHref="/" />
+          </IonButtons>
 
-            <IonButtons slot='end'>
-              <IonButton class='create-project-button' type='submit'>
-                Create
-              </IonButton>
-            </IonButtons>
-          </IonToolbar>
-        </IonHeader>
+          <IonButtons slot="end">
+            <IonButton onClick={createNewProject}>Create</IonButton>
+          </IonButtons>
+        </IonToolbar>
+      </IonHeader>
 
-        <IonContent fullscreen>
-          <IonList class='ion-margin'>
-            <IonItem>
-              <IonLabel position='stacked'>Project's name</IonLabel>
-              <IonInput
-                {...projectNameProp}
-                onIonChange={onChangeProjectNameInput}>
-              </IonInput>
-              {showError('projectName')}
-            </IonItem>
+      <IonContent fullscreen>
+        <IonList class="ion-margin">
+          <IonItem>
+            <IonLabel position="stacked">Project's name</IonLabel>
+            <IonInput onIonChange={onChangeProjectNameInput}></IonInput>
+          </IonItem>
+          {showNameError()}
 
-            <IonItem>
-              <IonLabel position='stacked'>Project's Description</IonLabel>
-              <IonTextarea
-                {...projectDescriptionProp}
-                auto-grow
-                onIonChange={onChangeProjectDecriptionInput}>
-              </IonTextarea>
-              {showError('projectDescription')}
-            </IonItem>
-          </IonList>
-        </IonContent>
-      </form>
+          <IonItem>
+            <IonLabel position="stacked">Project's Description</IonLabel>
+            <IonTextarea auto-grow onIonChange={onChangeProjectDecriptionInput}></IonTextarea>
+          </IonItem>
+          {showDescriptionError()}
+        </IonList>
+      </IonContent>
     </IonPage>
   );
 };

@@ -40,7 +40,7 @@ const Home: React.FC = () => {
       <IonHeader>
         <IonToolbar>
           <IonButtons>
-            <IonBackButton defaultHref="\" />
+            <IonBackButton defaultHref="/" />
           </IonButtons>
           <IonTitle>Inbox</IonTitle>
         </IonToolbar>
