@@ -18,6 +18,7 @@ import {
   IonButton,
   IonPage,
 } from '@ionic/react';
+import ErrorMessage from '../components/ErrorMessage';
 
 const CreateProject: React.FC = () => {
   const [projectName, setProjectName] = useState<string>('');
@@ -44,12 +45,10 @@ const CreateProject: React.FC = () => {
   };
 
   const showNameError = () =>
-    projectNameError === true ? <p className="error-message">Project's name is required</p> : null;
+    projectNameError === true ? <ErrorMessage fieldName={'name'} /> : null;
 
   const showDescriptionError = () =>
-    projectDescriptionError === true ? (
-      <p className="error-message">Project's description is required</p>
-    ) : null;
+    projectDescriptionError === true ? <ErrorMessage fieldName={'description'} /> : null;
 
   const checkNameValue = () => {
     if (projectName === '') {
@@ -57,19 +56,19 @@ const CreateProject: React.FC = () => {
       return true;
     }
     return false;
-  }
+  };
   const checkDescriptionValue = () => {
     if (projectDescription === '') {
       setProjectDescriptionError(true);
       return true;
     }
     return false;
-  }
+  };
 
   const createNewProject = () => {
     let isNameValue = checkNameValue();
     let isDescriptionValue = checkDescriptionValue();
-    
+
     if (isNameValue || isDescriptionValue) {
       return;
     }
