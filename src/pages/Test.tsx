@@ -10,8 +10,11 @@ const Test: React.FC = () => {
 
   // subscribe to a document for realtime updates. just one line!
   const { status, data } = useFirestoreCollectionData(testingRef);
-  console.log("🚀 ~ file: Test.tsx ~ line 11 ~ status", status);
-  console.log("🚀 ~ file: Test.tsx ~ line 11 ~ data", data);
+
+  // check the loading status
+  if (status === 'loading') {
+    return <p>Fetching...</p>;
+  }
 
   return (
   <IonPage>
