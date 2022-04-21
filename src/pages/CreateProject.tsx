@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, SetStateAction, Dispatch } from 'react';
 import { useAppDispatch } from '../app/hooks';
 import { add } from '../features/projects/projectsSlice';
 import { useHistory } from 'react-router-dom';
@@ -50,24 +50,15 @@ const CreateProject: React.FC = () => {
   const showDescriptionError = useMemo(() =>
     hasDescriptionError ? <ErrorMessage fieldName='description' /> : null, [hasDescriptionError]);
 
-  const checkNameValue = () => {
-    if (projectName === '') {
-      setHasNameError(true);
-      return true;
-    }
-    return false;
-  };
-  const checkDescriptionValue = () => {
-    if (projectDescription === '') {
-      setHasDescriptionError(true);
-      return true;
-    }
-    return false;
+  const checkFieldValue = (field: string, hanldler: Dispatch<SetStateAction<boolean>>) => {
+    const isFieldEmpty = field === '';
+    hanldler(isFieldEmpty);
+    return isFieldEmpty;
   };
 
   const createNewProject = () => {
-    let isNameValue = checkNameValue();
-    let isDescriptionValue = checkDescriptionValue();
+    let isNameValue = checkFieldValue(projectName, setHasNameError);
+    let isDescriptionValue = checkFieldValue(projectDescription, setHasDescriptionError);
 
     if (isNameValue || isDescriptionValue) {
       return;
