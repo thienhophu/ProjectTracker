@@ -1,8 +1,5 @@
 import React, { useState, useMemo, SetStateAction, Dispatch } from 'react';
-import { useAppDispatch } from '../app/hooks';
-import { add } from '../features/projects/projectsSlice';
 import { useHistory } from 'react-router-dom';
-
 import {
   IonContent,
   IonToolbar,
@@ -18,11 +15,17 @@ import {
   IonButton,
   IonPage,
 } from '@ionic/react';
-import ErrorMessage from '../components/ErrorMessage';
+import { useAppDispatch } from '../../app/hooks';
+import ErrorMessage from '../../components/ErrorMessage';
+import { add } from '../../features/projects/projectsSlice';
+import { useFirestore } from 'reactfire';
+import { addDoc, collection } from '@firebase/firestore';
 
 const CreateProject: React.FC = () => {
-  const [projectName, setProjectName] = useState<string>('');
-  const [projectDescription, setProjectDescription] = useState<string>('');
+  const firestore = useFirestore();
+  const projectRef = collection(firestore, 'projects');
+  const [name, setName] = useState<string>('');
+  const [description, setDescription] = useState<string>('');
   const [hasNameError, setHasNameError] = useState<boolean>(false);
   const [hasDescriptionError, setHasDescriptionError] = useState<boolean>(false);
 
@@ -31,24 +34,28 @@ const CreateProject: React.FC = () => {
 
   const onChangeProjectNameInput = (event: any) => {
     setHasNameError(false);
-    setProjectName(event.detail.value || '');
+    setName(event.detail.value || '');
   };
 
   const onChangeProjectDecriptionInput = (event: any) => {
     setHasDescriptionError(false);
-    setProjectDescription(event.detail.value || '');
+    setDescription(event.detail.value || '');
   };
 
   const clearAllFields = () => {
-    setProjectName('');
-    setProjectDescription('');
+    setName('');
+    setDescription('');
   };
 
-  const showNameError = useMemo(() =>
-    hasNameError ? <ErrorMessage fieldName='name' /> : null, [hasNameError]);
+  const showNameError = useMemo(
+    () => (hasNameError ? <ErrorMessage fieldName="name" /> : null),
+    [hasNameError],
+  );
 
-  const showDescriptionError = useMemo(() =>
-    hasDescriptionError ? <ErrorMessage fieldName='description' /> : null, [hasDescriptionError]);
+  const showDescriptionError = useMemo(
+    () => (hasDescriptionError ? <ErrorMessage fieldName="description" /> : null),
+    [hasDescriptionError],
+  );
 
   const checkFieldValue = (field: string, hanldler: Dispatch<SetStateAction<boolean>>) => {
     const isFieldEmpty = field === '';
@@ -56,9 +63,9 @@ const CreateProject: React.FC = () => {
     return isFieldEmpty;
   };
 
-  const createNewProject = () => {
-    let isNameValue = checkFieldValue(projectName, setHasNameError);
-    let isDescriptionValue = checkFieldValue(projectDescription, setHasDescriptionError);
+  const createNewProject = async () => {
+    let isNameValue = checkFieldValue(name, setHasNameError);
+    let isDescriptionValue = checkFieldValue(description, setHasDescriptionError);
 
     if (isNameValue || isDescriptionValue) {
       return;
@@ -67,12 +74,20 @@ const CreateProject: React.FC = () => {
     dispatch(
       add({
         id: '12312',
-        name: projectName,
-        description: projectDescription,
+        name: name,
+        description: description,
         progress: 0,
         steps: [],
       }),
     );
+
+    await addDoc(projectRef, {
+      name,
+      description,
+      imageURL: 'https://www.linkpicture.com/q/mansion.jpg',
+      steps: [],
+    });
+
     clearAllFields();
     goBack();
   };

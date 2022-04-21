@@ -3,7 +3,6 @@ import { IonApp, IonLoading, IonRouterOutlet, setupIonicReact } from '@ionic/rea
 import { IonReactRouter } from '@ionic/react-router';
 import Home from './pages/Home';
 import ViewMessage from './pages/ViewMessage';
-import Dashboard from './pages/Dashboard';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -37,6 +36,7 @@ import { initializeFirestore, enableIndexedDbPersistence } from 'firebase/firest
 import { FirestoreProvider, useInitFirestore } from 'reactfire';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import Projects from './pages/Projects';
 
 setupIonicReact({
   mode: 'ios',
@@ -59,10 +59,9 @@ const App: React.FC = () => {
         <IonApp>
           <IonReactRouter>
             <IonRouterOutlet>
-              <Route exact path={DASHBOARD_PAGE} component={Dashboard} />
+              <Route exact path={DASHBOARD_PAGE} component={Projects} />
               <Route exact path={CREATE_PROJECT} component={CreateProject} />
               <Route exact path={HOME} component={Home} />
-              <Route exact path={DASHBOARD_PAGE} component={Dashboard} />
               <Route exact path={STEPS_PAGE} component={Steps} />
               <Route exact path={GALLERY_PAGE} component={Gallery} />
               <Route path="/message/:id" component={ViewMessage} />
