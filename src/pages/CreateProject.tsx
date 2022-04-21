@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, SetStateAction, Dispatch } from 'react';
 import { useAppDispatch } from '../app/hooks';
 import { add } from '../features/projects/projectsSlice';
 import { useHistory } from 'react-router-dom';
+
 import {
   IonContent,
   IonToolbar,
@@ -17,23 +18,52 @@ import {
   IonButton,
   IonPage,
 } from '@ionic/react';
+import ErrorMessage from '../components/ErrorMessage';
 
 const CreateProject: React.FC = () => {
   const [projectName, setProjectName] = useState<string>('');
   const [projectDescription, setProjectDescription] = useState<string>('');
+  const [hasNameError, setHasNameError] = useState<boolean>(false);
+  const [hasDescriptionError, setHasDescriptionError] = useState<boolean>(false);
+
   const dispatch = useAppDispatch();
-  const {goBack} = useHistory();
+  const { goBack } = useHistory();
+
+  const onChangeProjectNameInput = (event: any) => {
+    setHasNameError(false);
+    setProjectName(event.detail.value || '');
+  };
+
+  const onChangeProjectDecriptionInput = (event: any) => {
+    setHasDescriptionError(false);
+    setProjectDescription(event.detail.value || '');
+  };
 
   const clearAllFields = () => {
     setProjectName('');
     setProjectDescription('');
-  }
+  };
 
-  const onChangeProjectNameInput = (event:any) => setProjectName(event.detail.value || '')
+  const showNameError = useMemo(() =>
+    hasNameError ? <ErrorMessage fieldName='name' /> : null, [hasNameError]);
 
-  const onChangeProjectDecriptionInput = (event:any) => setProjectDescription(event.detail.value || '')
+  const showDescriptionError = useMemo(() =>
+    hasDescriptionError ? <ErrorMessage fieldName='description' /> : null, [hasDescriptionError]);
 
-   const createNewProject = () => {
+  const checkFieldValue = (field: string, hanldler: Dispatch<SetStateAction<boolean>>) => {
+    const isFieldEmpty = field === '';
+    hanldler(isFieldEmpty);
+    return isFieldEmpty;
+  };
+
+  const createNewProject = () => {
+    let isNameValue = checkFieldValue(projectName, setHasNameError);
+    let isDescriptionValue = checkFieldValue(projectDescription, setHasDescriptionError);
+
+    if (isNameValue || isDescriptionValue) {
+      return;
+    }
+
     dispatch(
       add({
         id: '12312',
@@ -45,43 +75,36 @@ const CreateProject: React.FC = () => {
     );
     clearAllFields();
     goBack();
-  }
-  
+  };
+
   return (
     <IonPage>
       <IonHeader>
         <IonToolbar>
           <IonTitle>Project Tracker</IonTitle>
-          <IonButtons slot='start'>
-            <IonBackButton defaultHref='\' />
+          <IonButtons slot="start">
+            <IonBackButton defaultHref="/" />
           </IonButtons>
 
-          <IonButtons slot='end'>
-            <IonButton onClick={createNewProject}>
-              Create
-            </IonButton>
+          <IonButtons slot="end">
+            <IonButton onClick={createNewProject}>Create</IonButton>
           </IonButtons>
         </IonToolbar>
       </IonHeader>
 
       <IonContent fullscreen>
-        <IonList class='ion-margin'>
+        <IonList class="ion-margin">
           <IonItem>
-            <IonLabel position='stacked'>Project's name</IonLabel>
-            <IonInput
-              value={projectName}
-              onIonChange={onChangeProjectNameInput}
-            ></IonInput>
+            <IonLabel position="stacked">Project's name</IonLabel>
+            <IonInput onIonChange={onChangeProjectNameInput}></IonInput>
           </IonItem>
-          
+          {showNameError}
+
           <IonItem>
-            <IonLabel position='stacked'>Project's Description</IonLabel>
-            <IonTextarea
-              auto-grow
-              value={projectDescription}
-              onIonChange={onChangeProjectDecriptionInput}
-            ></IonTextarea>
+            <IonLabel position="stacked">Project's Description</IonLabel>
+            <IonTextarea auto-grow onIonChange={onChangeProjectDecriptionInput}></IonTextarea>
           </IonItem>
+          {showDescriptionError}
         </IonList>
       </IonContent>
     </IonPage>
