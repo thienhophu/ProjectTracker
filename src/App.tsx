@@ -1,5 +1,5 @@
 import { Redirect, Route } from 'react-router-dom';
-import { IonApp, IonRouterOutlet, setupIonicReact } from '@ionic/react';
+import { IonApp, IonLoading, IonRouterOutlet, setupIonicReact } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 import Home from './pages/Home';
 import ViewMessage from './pages/ViewMessage';
@@ -25,28 +25,37 @@ import '@ionic/react/css/display.css';
 import './theme/variables.css';
 /* Tailwind variables */
 import './theme/tailwind.css';
+
 import { Provider } from 'react-redux';
 import { store } from './app/store';
 import Steps from './pages/Steps';
 import CreateProject from './pages/CreateProject';
-import { DASHBOARD_PAGE, GALLERY_PAGE, STEPS_PAGE, CREATE_PROJECT, HOME} from './app/routes';
+import { DASHBOARD_PAGE, GALLERY_PAGE, STEPS_PAGE, CREATE_PROJECT, HOME } from './app/routes';
 import Gallery from './pages/Gallery';
 import Test from './pages/Test';
-import { getFirestore } from 'firebase/firestore';
-import { useFirebaseApp, FirestoreProvider } from 'reactfire';
-import Login from "./pages/Login";
-import Register from "./pages/Register";
+import { initializeFirestore, enableIndexedDbPersistence } from 'firebase/firestore';
+import { FirestoreProvider, useInitFirestore } from 'reactfire';
+import Login from './pages/Login';
+import Register from './pages/Register';
 
 setupIonicReact({
   mode: 'ios',
 });
 
 const App: React.FC = () => {
-  const firestore = getFirestore(useFirebaseApp());
+  const { status, data: firestoreInstance } = useInitFirestore(async (firebaseApp) => {
+    const db = initializeFirestore(firebaseApp, {});
+    await enableIndexedDbPersistence(db);
+    return db;
+  });
+
+  if (status === 'loading') {
+    return <IonLoading isOpen message={'Please wait...'} />;
+  }
 
   return (
     <Provider store={store}>
-      <FirestoreProvider sdk={firestore}>
+      <FirestoreProvider sdk={firestoreInstance}>
         <IonApp>
           <IonReactRouter>
             <IonRouterOutlet>
@@ -56,11 +65,11 @@ const App: React.FC = () => {
               <Route exact path={DASHBOARD_PAGE} component={Dashboard} />
               <Route exact path={STEPS_PAGE} component={Steps} />
               <Route exact path={GALLERY_PAGE} component={Gallery} />
-              <Route path='/message/:id' component={ViewMessage} />
+              <Route path="/message/:id" component={ViewMessage} />
               <Route path="/login" component={Login} />
               <Route path="/register" component={Register} />
               <Route exact path={'/test'} component={Test} />
-              <Redirect exact from='/' to={DASHBOARD_PAGE} />
+              <Redirect exact from="/" to={DASHBOARD_PAGE} />
             </IonRouterOutlet>
           </IonReactRouter>
         </IonApp>

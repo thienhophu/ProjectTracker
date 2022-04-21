@@ -24,6 +24,11 @@ npm start
 
 - To run app in simulators, please see the below building iOS/Android
 
+## Setup Environment
+
+- Clone the .env.template into .env.local
+- Get Firebase API key and add it into REACT_APP_FIREBASE_API_KEY
+
 ## Some Commands to use in this project
 
 ```bash
