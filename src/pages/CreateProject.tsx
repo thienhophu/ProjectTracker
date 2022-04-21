@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useAppDispatch } from '../app/hooks';
 import { add } from '../features/projects/projectsSlice';
 import { useHistory } from 'react-router-dom';
@@ -23,19 +23,19 @@ import ErrorMessage from '../components/ErrorMessage';
 const CreateProject: React.FC = () => {
   const [projectName, setProjectName] = useState<string>('');
   const [projectDescription, setProjectDescription] = useState<string>('');
-  const [projectNameError, setProjectNameError] = useState<boolean>(false);
-  const [projectDescriptionError, setProjectDescriptionError] = useState<boolean>(false);
+  const [hasNameError, setHasNameError] = useState<boolean>(false);
+  const [hasDescriptionError, setHasDescriptionError] = useState<boolean>(false);
 
   const dispatch = useAppDispatch();
   const { goBack } = useHistory();
 
   const onChangeProjectNameInput = (event: any) => {
-    setProjectNameError(false);
+    setHasNameError(false);
     setProjectName(event.detail.value || '');
   };
 
   const onChangeProjectDecriptionInput = (event: any) => {
-    setProjectDescriptionError(false);
+    setHasDescriptionError(false);
     setProjectDescription(event.detail.value || '');
   };
 
@@ -44,22 +44,22 @@ const CreateProject: React.FC = () => {
     setProjectDescription('');
   };
 
-  const showNameError = () =>
-    projectNameError === true ? <ErrorMessage fieldName={'name'} /> : null;
+  const showNameError = useMemo(() =>
+    hasNameError ? <ErrorMessage fieldName='name' /> : null, [hasNameError]);
 
-  const showDescriptionError = () =>
-    projectDescriptionError === true ? <ErrorMessage fieldName={'description'} /> : null;
+  const showDescriptionError = useMemo(() =>
+    hasDescriptionError ? <ErrorMessage fieldName='description' /> : null, [hasDescriptionError]);
 
   const checkNameValue = () => {
     if (projectName === '') {
-      setProjectNameError(true);
+      setHasNameError(true);
       return true;
     }
     return false;
   };
   const checkDescriptionValue = () => {
     if (projectDescription === '') {
-      setProjectDescriptionError(true);
+      setHasDescriptionError(true);
       return true;
     }
     return false;
@@ -107,13 +107,13 @@ const CreateProject: React.FC = () => {
             <IonLabel position="stacked">Project's name</IonLabel>
             <IonInput onIonChange={onChangeProjectNameInput}></IonInput>
           </IonItem>
-          {showNameError()}
+          {showNameError}
 
           <IonItem>
             <IonLabel position="stacked">Project's Description</IonLabel>
             <IonTextarea auto-grow onIonChange={onChangeProjectDecriptionInput}></IonTextarea>
           </IonItem>
-          {showDescriptionError()}
+          {showDescriptionError}
         </IonList>
       </IonContent>
     </IonPage>

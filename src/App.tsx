@@ -31,7 +31,6 @@ import Steps from './pages/Steps';
 import CreateProject from './pages/CreateProject';
 import { DASHBOARD_PAGE, GALLERY_PAGE, STEPS_PAGE, CREATE_PROJECT, HOME} from './app/routes';
 import Gallery from './pages/Gallery';
-import './global.css';
 
 setupIonicReact({
   mode: 'ios',
