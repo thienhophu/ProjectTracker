@@ -29,7 +29,14 @@ import { Provider } from 'react-redux';
 import { store } from './app/store';
 import Steps from './pages/Steps';
 import CreateProject from './pages/CreateProject';
-import { DASHBOARD_PAGE, GALLERY_PAGE, STEPS_PAGE, CREATE_PROJECT, HOME } from './app/routes';
+import {
+  DASHBOARD_PAGE,
+  GALLERY_PAGE,
+  STEPS_PAGE,
+  CREATE_PROJECT,
+  HOME,
+  PROJECTS_PAGE,
+} from './app/routes';
 import Gallery from './pages/Gallery';
 import Test from './pages/Test';
 import { initializeFirestore, enableIndexedDbPersistence } from 'firebase/firestore';
@@ -62,7 +69,7 @@ const App: React.FC = () => {
               <Route exact path={DASHBOARD_PAGE} component={Projects} />
               <Route exact path={CREATE_PROJECT} component={CreateProject} />
               <Route exact path={HOME} component={Home} />
-              <Route exact path={STEPS_PAGE} component={Steps} />
+              <Route exact path={`${PROJECTS_PAGE}/:id${STEPS_PAGE}`} component={Steps} />
               <Route exact path={GALLERY_PAGE} component={Gallery} />
               <Route path="/message/:id" component={ViewMessage} />
               <Route path="/login" component={Login} />

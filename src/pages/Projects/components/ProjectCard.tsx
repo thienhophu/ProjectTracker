@@ -1,8 +1,9 @@
 import { IonCard, IonImg, IonCardHeader, IonCardTitle, IonCardContent } from '@ionic/react';
-import { STEPS_PAGE } from '../../../app/routes';
+import { PROJECTS_PAGE, STEPS_PAGE } from '../../../app/routes';
 
 interface ProjectCardProps {
   project: {
+    NO_ID_FIELD: string;
     name: string;
     description: string;
     imageURL: string;
@@ -10,7 +11,7 @@ interface ProjectCardProps {
 }
 
 const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => (
-  <IonCard color="white" routerLink={STEPS_PAGE}>
+  <IonCard color="white" routerLink={`${PROJECTS_PAGE}/${project.NO_ID_FIELD}${STEPS_PAGE}`}>
     <IonImg src={project.imageURL} />
     <IonCardHeader>
       <IonCardTitle>{project.name}</IonCardTitle>
