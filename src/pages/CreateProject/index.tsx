@@ -84,7 +84,8 @@ const CreateProject: React.FC = () => {
     await addDoc(projectRef, {
       name,
       description,
-      imageURL: 'https://www.linkpicture.com/q/mansion.jpg',
+      imageURL:
+        'https://thumbor.forbes.com/thumbor/fit-in/900x510/https://www.forbes.com/advisor/wp-content/uploads/2021/05/featured-image-cost-of-new-home.jpeg.jpg',
       steps: [],
     });
 

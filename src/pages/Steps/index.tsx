@@ -16,25 +16,29 @@ import {
   IonTitle,
   IonToolbar,
   useIonAlert,
+  useIonToast,
 } from '@ionic/react';
-import { deleteDoc, doc } from 'firebase/firestore';
-import { useCallback, useState } from 'react';
+import { addDoc, collection, deleteDoc, doc } from 'firebase/firestore';
+import { useCallback, useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router';
-import { useFirestore, useFirestoreDocData } from 'reactfire';
+import { useFirestore, useFirestoreCollectionData } from 'reactfire';
 import { GALLERY_PAGE } from '../../app/routes';
 import './styles.css';
 
 const Steps: React.FC = () => {
   const [enableReorder, setEnableReorder] = useState(false);
-  const [steps, setSteps] = useState(['Step 1', 'Step 2', 'Step 3', 'Step 4', 'Step 5', 'Step 6']);
+  const [steps, setSteps] = useState<any>([]);
   const firestore = useFirestore();
   const { id } = useParams<any>();
   const { goBack } = useHistory();
   const [present] = useIonAlert();
+  const [createStepAlert] = useIonAlert();
+  const [presentCreateStepToast] = useIonToast();
 
   const projectRef = doc(firestore, 'projects', id);
+  const stepRef = collection(firestore, `projects/${id}/steps`);
 
-  const { status, data: project } = useFirestoreDocData(projectRef);
+  const { status, data: stepsData } = useFirestoreCollectionData(stepRef);
 
   const reorderText = enableReorder ? 'Done' : 'Re-order';
 
@@ -67,9 +71,59 @@ const Steps: React.FC = () => {
     });
   }, [projectRef, goBack, present]);
 
+  const onCreateStep = useCallback(() => {
+    createStepAlert({
+      header: 'Delete',
+      message: 'Are you sure?',
+      inputs: [
+        {
+          name: 'name',
+          placeholder: 'Name',
+          type: 'text',
+          attributes: {
+            autoComplete: 'none',
+          },
+        },
+        {
+          name: 'description',
+          placeholder: 'Description',
+          type: 'textarea',
+        },
+      ],
+      buttons: [
+        { text: 'Cancel', role: 'destructive' },
+        {
+          text: 'Create',
+          handler: async ({ name, description }) => {
+            if (!name || !description) {
+              presentCreateStepToast({
+                message: 'All fields must be entered!',
+                color: 'danger',
+                duration: 2000,
+              });
+              return;
+            }
+            await addDoc(stepRef, {
+              name,
+              description,
+              imageURL:
+                'https://thumbor.forbes.com/thumbor/fit-in/900x510/https://www.forbes.com/advisor/wp-content/uploads/2021/05/featured-image-cost-of-new-home.jpeg.jpg',
+            });
+          },
+        },
+      ],
+    });
+  }, [presentCreateStepToast, createStepAlert, stepRef]);
+
+  useEffect(() => {
+    if (stepsData) {
+      setSteps(stepsData);
+    }
+  }, [stepsData]);
+
   const isLoading = status === 'loading';
 
-  if (!project || isLoading) {
+  if (!steps || isLoading) {
     return <IonLoading isOpen />;
   }
 
@@ -89,20 +143,23 @@ const Steps: React.FC = () => {
       <IonContent fullscreen>
         <IonList>
           <IonReorderGroup disabled={!enableReorder} onIonItemReorder={doReorder}>
-            {steps.map((step) => (
-              <IonItem key={step} routerLink={GALLERY_PAGE}>
+            {steps.map((step: any) => (
+              <IonItem key={step.NO_ID_FIELD} routerLink={GALLERY_PAGE}>
                 <IonThumbnail slot="start">
-                  <IonImg src="https://www.linkpicture.com/q/mansion.jpg" />
+                  <IonImg src="https://thumbor.forbes.com/thumbor/fit-in/900x510/https://www.forbes.com/advisor/wp-content/uploads/2021/05/featured-image-cost-of-new-home.jpeg.jpg" />
                 </IonThumbnail>
                 <IonLabel>
-                  <h2>{step}</h2>
-                  <p>Step description</p>
+                  <h2>{step.name}</h2>
+                  <p>{step.description}</p>
                 </IonLabel>
                 <IonReorder slot="end" />
               </IonItem>
             ))}
           </IonReorderGroup>
         </IonList>
+        <IonButton expand="full" onClick={onCreateStep}>
+          Create Step
+        </IonButton>
         <IonButton expand="full" color="danger" onClick={onDeleteProject}>
           Delete Project
         </IonButton>
