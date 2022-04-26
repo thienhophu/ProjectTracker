@@ -103,12 +103,25 @@ const Steps: React.FC = () => {
               });
               return;
             }
-            await addDoc(stepRef, {
-              name,
-              description,
-              imageURL:
-                'https://thumbor.forbes.com/thumbor/fit-in/900x510/https://www.forbes.com/advisor/wp-content/uploads/2021/05/featured-image-cost-of-new-home.jpeg.jpg',
-            });
+            try {
+              await addDoc(stepRef, {
+                name,
+                description,
+                imageURL:
+                  'https://thumbor.forbes.com/thumbor/fit-in/900x510/https://www.forbes.com/advisor/wp-content/uploads/2021/05/featured-image-cost-of-new-home.jpeg.jpg',
+              });
+              presentCreateStepToast({
+                message: 'New Step created!',
+                color: 'success',
+                duration: 2000,
+              });
+            } catch {
+              presentCreateStepToast({
+                message: 'Unable to create a step',
+                color: 'danger',
+                duration: 2000,
+              });
+            }
           },
         },
       ],
