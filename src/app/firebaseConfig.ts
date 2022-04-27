@@ -1,7 +1,6 @@
 import { FirebaseApp, initializeApp } from 'firebase/app';
 import { getAuth, connectAuthEmulator } from 'firebase/auth';
 import { getFirestore, connectFirestoreEmulator } from 'firebase/firestore';
-import {r} from 'reactfire';
 
 const FIREBASE_API_KEY = process.env.REACT_APP_FIREBASE_API_KEY;
 const APP_ENV = process.env.REACT_APP_ENV;
@@ -21,8 +20,8 @@ export const config = APP_ENV === 'local' ? {
 
 // Initialize Firebase
 const firebaseApp: FirebaseApp = initializeApp(config);
-const db = getFirestore(firebaseApp);
 export const auth = getAuth(firebaseApp);
+const db = getFirestore(firebaseApp);
 
 if (APP_ENV === 'local') {
   connectAuthEmulator(auth, "http://localhost:9099");
