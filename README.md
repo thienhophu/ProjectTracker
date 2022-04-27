@@ -29,6 +29,33 @@ npm start
 - Clone the .env.template into .env.local
 - Get Firebase API key and add it into REACT_APP_FIREBASE_API_KEY
 
+## Setup Firebase emulators
+
+- Install Java 11 or above in [page](https://www.oracle.com/java/technologies/downloads/)
+
+- Install the Firebase CLI:
+
+```bash
+npm install -g firebase-tools
+```
+
+- Log in and test the Firebase CLI: 
+
+```bash
+// Log into Firebase using your Google account
+firebase login
+
+// Test that the CLI is properly installed and accessing your account by listing your Firebase project
+firebase projects:list
+```
+
+- Start emulators:
+
+```bash
+firebase emulators:start
+```
+
+
 ## Some Commands to use in this project
 
 ```bash
