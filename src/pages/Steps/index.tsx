@@ -6,6 +6,9 @@ import {
   IonHeader,
   IonImg,
   IonItem,
+  IonItemOption,
+  IonItemOptions,
+  IonItemSliding,
   IonLabel,
   IonList,
   IonLoading,
@@ -18,13 +21,42 @@ import {
   useIonAlert,
   useIonToast,
 } from '@ionic/react';
-import { addDoc, collection, deleteDoc, doc, getDoc, updateDoc } from 'firebase/firestore';
+import { addDoc, collection, deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import { maxBy, orderBy } from 'lodash';
 import { useCallback, useMemo, useState } from 'react';
 import { useHistory, useParams } from 'react-router';
 import { useFirestore, useFirestoreCollectionData } from 'reactfire';
 import { GALLERY_PAGE } from '../../app/routes';
 import './styles.css';
+
+const SingleStep: React.FC<{
+  step: any;
+  onDelete: Function;
+}> = ({ step, onDelete }) => {
+  const onClickDelete = useCallback(() => {
+    onDelete(step.NO_ID_FIELD);
+  }, [onDelete, step.NO_ID_FIELD]);
+
+  return (
+    <IonItemSliding>
+      <IonItem routerLink={GALLERY_PAGE}>
+        <IonThumbnail slot="start">
+          <IonImg src="https://thumbor.forbes.com/thumbor/fit-in/900x510/https://www.forbes.com/advisor/wp-content/uploads/2021/05/featured-image-cost-of-new-home.jpeg.jpg" />
+        </IonThumbnail>
+        <IonLabel>
+          <h2>{step.name}</h2>
+          <p>{step.description}</p>
+        </IonLabel>
+        <IonReorder slot="end" />
+      </IonItem>
+      <IonItemOptions side="end">
+        <IonItemOption color="danger" onClick={onClickDelete}>
+          Delete
+        </IonItemOption>
+      </IonItemOptions>
+    </IonItemSliding>
+  );
+};
 
 const Steps: React.FC = () => {
   const [enableReorder, setEnableReorder] = useState(false);
@@ -48,20 +80,37 @@ const Steps: React.FC = () => {
     setEnableReorder(!enableReorder);
   }, [setEnableReorder, enableReorder]);
 
-  const doReorder = useCallback(
-    async (event: CustomEvent) => {
-      const orderedResults = event.detail
-        .complete(orderedSteps)
-        .map((result: any) => result.NO_ID_FIELD);
-
-      await orderedResults.forEach(async (step: string, index: number) => {
-        const washingtonRef = doc(firestore, `projects/${id}/steps`, step);
-        await updateDoc(washingtonRef, {
+  const updateStepsOrder = useCallback(
+    async (steps) => {
+      await steps.forEach(async (stepId: string, index: number) => {
+        await updateDoc(doc(firestore, `projects/${id}/steps`, stepId), {
           order: index,
         });
       });
     },
-    [orderedSteps, firestore, id],
+    [firestore, id],
+  );
+
+  const deleteStep = useCallback(
+    async (stepId) => {
+      await deleteDoc(doc(firestore, `projects/${id}/steps`, stepId));
+      const newSteps = orderedSteps
+        .filter((step) => step.NO_ID_FIELD !== stepId)
+        .map((result: any) => result.NO_ID_FIELD);
+      await updateStepsOrder(newSteps);
+    },
+    [firestore, id, orderedSteps, updateStepsOrder],
+  );
+
+  const doReorder = useCallback(
+    async (event: CustomEvent) => {
+      const orderedResultStepIds = event.detail
+        .complete(orderedSteps)
+        .map((result: any) => result.NO_ID_FIELD);
+
+      await updateStepsOrder(orderedResultStepIds);
+    },
+    [orderedSteps, updateStepsOrder],
   );
 
   const onDeleteProject = useCallback(() => {
@@ -122,7 +171,7 @@ const Steps: React.FC = () => {
                 description,
                 imageURL:
                   'https://thumbor.forbes.com/thumbor/fit-in/900x510/https://www.forbes.com/advisor/wp-content/uploads/2021/05/featured-image-cost-of-new-home.jpeg.jpg',
-                order: !highestOrder ? highestOrder + 1 : 0,
+                order: highestOrder >= 0 ? highestOrder + 1 : 0,
               });
               presentCreateStepToast({
                 message: 'New Step created!',
@@ -165,16 +214,7 @@ const Steps: React.FC = () => {
         <IonList>
           <IonReorderGroup disabled={!enableReorder} onIonItemReorder={doReorder}>
             {orderedSteps.map((step: any) => (
-              <IonItem key={step.NO_ID_FIELD} routerLink={GALLERY_PAGE}>
-                <IonThumbnail slot="start">
-                  <IonImg src="https://thumbor.forbes.com/thumbor/fit-in/900x510/https://www.forbes.com/advisor/wp-content/uploads/2021/05/featured-image-cost-of-new-home.jpeg.jpg" />
-                </IonThumbnail>
-                <IonLabel>
-                  <h2>{step.name}</h2>
-                  <p>{step.description}</p>
-                </IonLabel>
-                <IonReorder slot="end" />
-              </IonItem>
+              <SingleStep key={step.NO_ID_FIELD} step={step} onDelete={deleteStep} />
             ))}
           </IonReorderGroup>
         </IonList>
