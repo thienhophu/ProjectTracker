@@ -18,8 +18,9 @@ import {
   useIonAlert,
   useIonToast,
 } from '@ionic/react';
-import { addDoc, collection, deleteDoc, doc } from 'firebase/firestore';
-import { useCallback, useEffect, useState } from 'react';
+import { addDoc, collection, deleteDoc, doc, getDoc, updateDoc } from 'firebase/firestore';
+import { maxBy, orderBy } from 'lodash';
+import { useCallback, useMemo, useState } from 'react';
 import { useHistory, useParams } from 'react-router';
 import { useFirestore, useFirestoreCollectionData } from 'reactfire';
 import { GALLERY_PAGE } from '../../app/routes';
@@ -27,7 +28,6 @@ import './styles.css';
 
 const Steps: React.FC = () => {
   const [enableReorder, setEnableReorder] = useState(false);
-  const [steps, setSteps] = useState<any>([]);
   const firestore = useFirestore();
   const { id } = useParams<any>();
   const { goBack } = useHistory();
@@ -40,6 +40,8 @@ const Steps: React.FC = () => {
 
   const { status, data: stepsData } = useFirestoreCollectionData(stepRef);
 
+  const orderedSteps = useMemo(() => orderBy(stepsData, 'order'), [stepsData]);
+
   const reorderText = enableReorder ? 'Done' : 'Re-order';
 
   const onToggleReorder = useCallback(() => {
@@ -47,10 +49,19 @@ const Steps: React.FC = () => {
   }, [setEnableReorder, enableReorder]);
 
   const doReorder = useCallback(
-    (event: CustomEvent) => {
-      setSteps(event.detail.complete(steps));
+    async (event: CustomEvent) => {
+      const orderedResults = event.detail
+        .complete(orderedSteps)
+        .map((result: any) => result.NO_ID_FIELD);
+
+      await orderedResults.forEach(async (step: string, index: number) => {
+        const washingtonRef = doc(firestore, `projects/${id}/steps`, step);
+        await updateDoc(washingtonRef, {
+          order: index,
+        });
+      });
     },
-    [steps],
+    [orderedSteps, firestore, id],
   );
 
   const onDeleteProject = useCallback(() => {
@@ -104,11 +115,14 @@ const Steps: React.FC = () => {
               return;
             }
             try {
+              const highestOrder = maxBy(stepsData, 'order')?.order || null;
+
               await addDoc(stepRef, {
                 name,
                 description,
                 imageURL:
                   'https://thumbor.forbes.com/thumbor/fit-in/900x510/https://www.forbes.com/advisor/wp-content/uploads/2021/05/featured-image-cost-of-new-home.jpeg.jpg',
+                order: !highestOrder ? highestOrder + 1 : 0,
               });
               presentCreateStepToast({
                 message: 'New Step created!',
@@ -126,17 +140,11 @@ const Steps: React.FC = () => {
         },
       ],
     });
-  }, [presentCreateStepToast, createStepAlert, stepRef]);
-
-  useEffect(() => {
-    if (stepsData) {
-      setSteps(stepsData);
-    }
-  }, [stepsData]);
+  }, [presentCreateStepToast, createStepAlert, stepRef, stepsData]);
 
   const isLoading = status === 'loading';
 
-  if (!steps || isLoading) {
+  if (!stepsData || isLoading) {
     return <IonLoading isOpen />;
   }
 
@@ -156,7 +164,7 @@ const Steps: React.FC = () => {
       <IonContent fullscreen>
         <IonList>
           <IonReorderGroup disabled={!enableReorder} onIonItemReorder={doReorder}>
-            {steps.map((step: any) => (
+            {orderedSteps.map((step: any) => (
               <IonItem key={step.NO_ID_FIELD} routerLink={GALLERY_PAGE}>
                 <IonThumbnail slot="start">
                   <IonImg src="https://thumbor.forbes.com/thumbor/fit-in/900x510/https://www.forbes.com/advisor/wp-content/uploads/2021/05/featured-image-cost-of-new-home.jpeg.jpg" />
