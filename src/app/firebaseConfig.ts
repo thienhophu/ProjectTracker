@@ -1,9 +1,10 @@
 import { FirebaseApp, initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
+import { getFirestore } from 'firebase/firestore';
 
 const FIREBASE_API_KEY = process.env.REACT_APP_FIREBASE_API_KEY;
 
-export const config = {
+const config = {
   apiKey: FIREBASE_API_KEY,
   authDomain: 'project-tracker-620a6.firebaseapp.com',
   databaseURL: 'https://project-tracker-620a6-default-rtdb.asia-southeast1.firebasedatabase.app',
@@ -15,4 +16,7 @@ export const config = {
 
 // Initialize Firebase
 const firebaseApp: FirebaseApp = initializeApp(config);
-export const auth = getAuth(firebaseApp);
+const auth = getAuth(firebaseApp);
+const firestore = getFirestore(firebaseApp);
+
+export { config, auth, firestore };

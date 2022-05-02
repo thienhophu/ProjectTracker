@@ -14,13 +14,20 @@ import { useFirestore, useFirestoreCollectionData } from 'reactfire';
 import { collection } from '@firebase/firestore';
 import { CREATE_PROJECT } from '../../app/routes';
 import ProjectCard from './components/ProjectCard';
+import { logout } from '../../services/auth';
+import { useDispatch } from 'react-redux';
 
 const Projects: React.FC = () => {
+  const dispatch = useDispatch();
   const firestore = useFirestore();
   const ref = collection(firestore, 'projects');
 
   const { status, data: projects } = useFirestoreCollectionData(ref);
   const isLoading = status === 'loading';
+
+  const logOut = async () => {
+    dispatch(logout());
+  };
 
   if (!projects || isLoading) {
     return <IonLoading isOpen />;
@@ -30,6 +37,9 @@ const Projects: React.FC = () => {
     <IonPage>
       <IonHeader>
         <IonToolbar>
+          <IonButtons slot="start">
+            <IonButton onClick={logOut}>Logout</IonButton>
+          </IonButtons>
           <IonTitle>Project Tracker</IonTitle>
 
           <IonButtons slot="end">

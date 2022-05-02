@@ -26,7 +26,7 @@ import { maxBy, orderBy } from 'lodash';
 import { useCallback, useMemo, useState } from 'react';
 import { useHistory, useParams } from 'react-router';
 import { useFirestore, useFirestoreCollectionData } from 'reactfire';
-import { GALLERY_PAGE } from '../../app/routes';
+import { GALLERY_PAGE, PROJECTS_PAGE, STEPS_PAGE } from '../../app/routes';
 import './styles.css';
 
 const SingleStep: React.FC<{
