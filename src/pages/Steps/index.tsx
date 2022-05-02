@@ -26,20 +26,23 @@ import { maxBy, orderBy } from 'lodash';
 import { useCallback, useMemo, useState } from 'react';
 import { useHistory, useParams } from 'react-router';
 import { useFirestore, useFirestoreCollectionData } from 'reactfire';
-import { GALLERY_PAGE } from '../../app/routes';
+import { GALLERY_PAGE, PROJECTS_PAGE, STEPS_PAGE } from '../../app/routes';
 import './styles.css';
 
 const SingleStep: React.FC<{
   step: any;
   onDelete: Function;
 }> = ({ step, onDelete }) => {
+  const { id } = useParams<any>();
   const onClickDelete = useCallback(() => {
     onDelete(step.NO_ID_FIELD);
   }, [onDelete, step.NO_ID_FIELD]);
 
   return (
     <IonItemSliding>
-      <IonItem routerLink={GALLERY_PAGE}>
+      <IonItem
+        routerLink={`${PROJECTS_PAGE}/${id}${STEPS_PAGE}/${step.NO_ID_FIELD}${GALLERY_PAGE}`}
+      >
         <IonThumbnail slot="start">
           <IonImg src="https://thumbor.forbes.com/thumbor/fit-in/900x510/https://www.forbes.com/advisor/wp-content/uploads/2021/05/featured-image-cost-of-new-home.jpeg.jpg" />
         </IonThumbnail>

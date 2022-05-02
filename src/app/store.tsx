@@ -1,21 +1,14 @@
-import { configureStore } from "@reduxjs/toolkit";
-import authSlice from "../features/auth/authSlice";
-import counterSlice from "../features/counter/counterSlice";
-import projectsSlice from "../features/projects/projectsSlice";
-import { pokemonApi } from "../services/pokemon";
+import { configureStore } from '@reduxjs/toolkit';
+import authSlice from '../features/auth/authSlice';
+import counterSlice from '../features/counter/counterSlice';
+import projectsSlice from '../features/projects/projectsSlice';
 
 export const store = configureStore({
   reducer: {
     auth: authSlice,
     counter: counterSlice,
     projects: projectsSlice,
-    // Add the generated reducer as a specific top-level slice
-    [pokemonApi.reducerPath]: pokemonApi.reducer,
   },
-  // Adding the api middleware enables caching, invalidation, polling,
-  // and other useful features of `rtk-query`.
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(pokemonApi.middleware),
 });
 
 // optional, but required for refetchOnFocus/refetchOnReconnect behaviors
