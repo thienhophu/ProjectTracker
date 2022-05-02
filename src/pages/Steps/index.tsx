@@ -200,16 +200,23 @@ const Steps: React.FC = () => {
     });
   }, [presentCreateStepToast, createStepAlert, stepRef, stepsData]);
 
+  const showPopover = useCallback(
+    (e: any) => {
+      e.persist();
+      setIsShowPopover({ isShowPopover: true, event: e });
+    },
+    [setIsShowPopover],
+  );
+
+  const onHideProjectPopover = useCallback(() => {
+    setIsShowPopover({ isShowPopover: false, event: undefined });
+  }, [setIsShowPopover]);
+
   const isLoading = status === 'loading';
 
   if (!stepsData || isLoading || !projectData) {
     return <IonLoading isOpen />;
   }
-
-  const showPopover = (e: any) => {
-    e.persist();
-    setIsShowPopover({ isShowPopover: true, event: e });
-  };
 
   return (
     <IonPage>
@@ -226,20 +233,20 @@ const Steps: React.FC = () => {
       </IonHeader>
       <IonContent fullscreen>
         <IonList>
-          <IonListHeader lines="inset">
-            <IonLabel className="space-between">
-              <IonButton onClick={showPopover}>{projectData.name}</IonButton>
-              <IonButton>{projectData.progress ?? 0}%</IonButton>
+          <IonListHeader lines="inset" className="mb-4">
+            <IonLabel>{projectData.name}</IonLabel>
+            <IonLabel className="text-right pr-8" onClick={showPopover}>
+              {projectData.progress ?? 0}%
             </IonLabel>
           </IonListHeader>
 
           <IonPopover
             event={popoverState.event}
             isOpen={popoverState.isShowPopover}
-            onDidDismiss={() => setIsShowPopover({ isShowPopover: false, event: undefined })}
+            onDidDismiss={onHideProjectPopover}
             alignment="center"
           >
-            <IonText className="ion-padding">Progress bar</IonText>
+            <IonText className="ion-padding">Progress {projectData.progress ?? 0}%</IonText>
             <IonRange min={0} max={100} pin color="secondary"></IonRange>
           </IonPopover>
 

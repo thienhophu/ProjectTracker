@@ -63,7 +63,7 @@ export const register =
         dispatch(REGISTER({ user: userCredential.user.toJSON() }));
       }
     } catch (error) {
-      console.error('🚀 ~ file: auth.ts ~ register ~ error', error);
+      throw error;
     }
   };
 

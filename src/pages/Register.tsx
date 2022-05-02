@@ -18,6 +18,7 @@ import {
 } from '@ionic/react';
 import { register } from '../services/auth';
 import { LOGIN } from '../app/routes';
+import { useHistory } from 'react-router';
 
 const Register: React.FC = () => {
   const dispatch = useDispatch();
@@ -25,15 +26,25 @@ const Register: React.FC = () => {
   const [password, setPassword] = useState('');
   const [role, setRole] = useState<string>('manager');
   const [presentCreateStepToast] = useIonToast();
+  const { push } = useHistory();
 
   const registerUser = async () => {
-    await dispatch(register(username, password, role));
+    try {
+      await dispatch(register(username, password, role));
 
-    presentCreateStepToast({
-      message: 'New Account created!',
-      color: 'success',
-      duration: 2000,
-    });
+      presentCreateStepToast({
+        message: 'New Account created!',
+        color: 'success',
+        duration: 2000,
+      });
+      push(LOGIN);
+    } catch (e) {
+      presentCreateStepToast({
+        message: 'Email already in use!',
+        color: 'danger',
+        duration: 2000,
+      });
+    }
   };
 
   return (
