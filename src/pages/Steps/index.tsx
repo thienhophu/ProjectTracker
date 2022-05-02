@@ -33,13 +33,16 @@ const SingleStep: React.FC<{
   step: any;
   onDelete: Function;
 }> = ({ step, onDelete }) => {
+  const { id } = useParams<any>();
   const onClickDelete = useCallback(() => {
     onDelete(step.NO_ID_FIELD);
   }, [onDelete, step.NO_ID_FIELD]);
 
   return (
     <IonItemSliding>
-      <IonItem routerLink={GALLERY_PAGE}>
+      <IonItem
+        routerLink={`${PROJECTS_PAGE}/${id}${STEPS_PAGE}/${step.NO_ID_FIELD}${GALLERY_PAGE}`}
+      >
         <IonThumbnail slot="start">
           <IonImg src="https://thumbor.forbes.com/thumbor/fit-in/900x510/https://www.forbes.com/advisor/wp-content/uploads/2021/05/featured-image-cost-of-new-home.jpeg.jpg" />
         </IonThumbnail>
