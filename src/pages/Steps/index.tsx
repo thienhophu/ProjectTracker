@@ -20,13 +20,17 @@ import {
   IonToolbar,
   useIonAlert,
   useIonToast,
+  IonListHeader,
+  IonPopover,
+  IonRange,
+  IonText,
 } from '@ionic/react';
 import { addDoc, collection, deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import { maxBy, orderBy } from 'lodash';
 import { useCallback, useMemo, useState } from 'react';
 import { useHistory, useParams } from 'react-router';
-import { useFirestore, useFirestoreCollectionData } from 'reactfire';
 import { GALLERY_PAGE, PROJECTS_PAGE, STEPS_PAGE } from '../../app/routes';
+import { useFirestore, useFirestoreCollectionData, useFirestoreDocData } from 'reactfire';
 import './styles.css';
 
 const SingleStep: React.FC<{
@@ -69,11 +73,13 @@ const Steps: React.FC = () => {
   const [present] = useIonAlert();
   const [createStepAlert] = useIonAlert();
   const [presentCreateStepToast] = useIonToast();
+  const [popoverState, setIsShowPopover] = useState({ isShowPopover: false, event: undefined });
 
   const projectRef = doc(firestore, 'projects', id);
   const stepRef = collection(firestore, `projects/${id}/steps`);
 
   const { status, data: stepsData } = useFirestoreCollectionData(stepRef);
+  const { data: projectData } = useFirestoreDocData(projectRef);
 
   const orderedSteps = useMemo(() => orderBy(stepsData, 'order'), [stepsData]);
 
@@ -196,9 +202,14 @@ const Steps: React.FC = () => {
 
   const isLoading = status === 'loading';
 
-  if (!stepsData || isLoading) {
+  if (!stepsData || isLoading || !projectData) {
     return <IonLoading isOpen />;
   }
+
+  const showPopover = (e: any) => {
+    e.persist();
+    setIsShowPopover({ isShowPopover: true, event: e });
+  };
 
   return (
     <IonPage>
@@ -215,6 +226,23 @@ const Steps: React.FC = () => {
       </IonHeader>
       <IonContent fullscreen>
         <IonList>
+          <IonListHeader lines="inset">
+            <IonLabel className="space-between">
+              <IonButton onClick={showPopover}>{projectData.name}</IonButton>
+              <IonButton>{projectData.progress ?? 0}%</IonButton>
+            </IonLabel>
+          </IonListHeader>
+
+          <IonPopover
+            event={popoverState.event}
+            isOpen={popoverState.isShowPopover}
+            onDidDismiss={() => setIsShowPopover({ isShowPopover: false, event: undefined })}
+            alignment="center"
+          >
+            <IonText className="ion-padding">Progress bar</IonText>
+            <IonRange min={0} max={100} pin color="secondary"></IonRange>
+          </IonPopover>
+
           <IonReorderGroup disabled={!enableReorder} onIonItemReorder={doReorder}>
             {orderedSteps.map((step: any) => (
               <SingleStep key={step.NO_ID_FIELD} step={step} onDelete={deleteStep} />
