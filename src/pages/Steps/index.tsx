@@ -233,7 +233,7 @@ const Steps: React.FC = () => {
       </IonHeader>
       <IonContent fullscreen>
         <IonList>
-          <IonListHeader lines="inset" className="mb-4">
+          <IonListHeader lines="inset" className="mb-8">
             <IonLabel>{projectData.name}</IonLabel>
             <IonLabel className="text-right pr-8" onClick={showPopover}>
               {projectData.progress ?? 0}%
@@ -256,7 +256,7 @@ const Steps: React.FC = () => {
             ))}
           </IonReorderGroup>
         </IonList>
-        <IonButton expand="full" onClick={onCreateStep}>
+        <IonButton expand="full" onClick={onCreateStep} className="mt-8">
           Create Step
         </IonButton>
         <IonButton expand="full" color="danger" onClick={onDeleteProject}>

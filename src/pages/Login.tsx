@@ -9,6 +9,7 @@ import {
   IonInput,
   IonButton,
   IonRouterLink,
+  IonList,
 } from '@ionic/react';
 import { login } from '../services/auth';
 import { DASHBOARD_PAGE, REGISTER } from '../app/routes';
@@ -33,19 +34,23 @@ const Login: React.FC = () => {
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
-        <IonInput
-          placeholder="Email"
-          onIonChange={(e: any) => setUsername(e.target.value)}
-        ></IonInput>
-        <IonInput
-          placeholder="Password"
-          type="password"
-          onIonChange={(e: any) => setPassword(e.target.value)}
-        ></IonInput>
-        <IonButton onClick={loginUser}>Login</IonButton>
-        <p>
-          New here? <IonRouterLink href={REGISTER}>Register</IonRouterLink>
-        </p>
+        <IonList className="p-4">
+          <IonInput
+            placeholder="Email"
+            onIonChange={(e: any) => setUsername(e.target.value)}
+          ></IonInput>
+          <IonInput
+            placeholder="Password"
+            type="password"
+            onIonChange={(e: any) => setPassword(e.target.value)}
+          ></IonInput>
+          <IonButton expand="full" onClick={loginUser} className="my-4">
+            Login
+          </IonButton>
+          <p>
+            New here? <IonRouterLink href={REGISTER}>Register</IonRouterLink>
+          </p>
+        </IonList>
       </IonContent>
     </IonPage>
   );
