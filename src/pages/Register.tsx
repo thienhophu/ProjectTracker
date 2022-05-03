@@ -55,32 +55,36 @@ const Register: React.FC = () => {
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
-        <IonInput
-          placeholder="Email"
-          onIonChange={(e: any) => setUsername(e.target.value)}
-        ></IonInput>
-        <IonInput
-          placeholder="Password"
-          type="password"
-          onIonChange={(e: any) => setPassword(e.target.value)}
-        ></IonInput>
-        <IonList>
-          <IonRadioGroup value={role} onIonChange={(e: any) => setRole(e.detail.value)}>
-            <IonItem>
-              <IonLabel>Manager</IonLabel>
-              <IonRadio slot="start" value="manager" />
-            </IonItem>
+        <IonList className="p-4">
+          <IonInput
+            placeholder="Email"
+            onIonChange={(e: any) => setUsername(e.target.value)}
+          ></IonInput>
+          <IonInput
+            placeholder="Password"
+            type="password"
+            onIonChange={(e: any) => setPassword(e.target.value)}
+          ></IonInput>
+          <IonList className="mt-4">
+            <IonRadioGroup value={role} onIonChange={(e: any) => setRole(e.detail.value)}>
+              <IonItem>
+                <IonLabel>Manager</IonLabel>
+                <IonRadio slot="start" value="manager" />
+              </IonItem>
 
-            <IonItem>
-              <IonLabel>User</IonLabel>
-              <IonRadio slot="start" value="user" />
-            </IonItem>
-          </IonRadioGroup>
+              <IonItem>
+                <IonLabel>User</IonLabel>
+                <IonRadio slot="start" value="user" />
+              </IonItem>
+            </IonRadioGroup>
+          </IonList>
+          <IonButton expand="full" onClick={registerUser} className="my-4">
+            Register
+          </IonButton>
+          <p>
+            Already have an account? <IonRouterLink href={LOGIN}>Login</IonRouterLink>
+          </p>
         </IonList>
-        <IonButton onClick={registerUser}>Register</IonButton>
-        <p>
-          Already have an account? <IonRouterLink href={LOGIN}>Login</IonRouterLink>
-        </p>
       </IonContent>
     </IonPage>
   );
