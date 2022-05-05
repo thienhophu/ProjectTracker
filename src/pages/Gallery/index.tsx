@@ -18,9 +18,9 @@ import {
 } from '@ionic/react';
 import { removeCircle } from 'ionicons/icons';
 import { usePhotoGallery } from '../../app/hooks';
-import { useFirestore, useFirestoreCollectionData } from 'reactfire';
+import { useFirestore, useFirestoreCollectionData, useFirestoreDocData } from 'reactfire';
 import { useParams } from 'react-router';
-import { setDoc, deleteDoc, doc, collection } from 'firebase/firestore';
+import { setDoc, deleteDoc, doc, collection, updateDoc } from 'firebase/firestore';
 import { FC, useCallback, useState } from 'react';
 
 const SingleImage: FC<{ image: any; onDelete: Function }> = ({ image, onDelete }) => {
@@ -65,6 +65,9 @@ const Gallery: FC = () => {
   const { takePhoto } = usePhotoGallery();
   const { id, stepId } = useParams<any>();
 
+  const stepRef = doc(firestore, `projects/${id}/steps/${stepId}`);
+  const { data: step } = useFirestoreDocData(stepRef);
+  console.log('🚀 ~ stepData', step);
   const galleryRef = collection(firestore, `projects/${id}/steps/${stepId}/gallery`);
   const { status, data: galleryData } = useFirestoreCollectionData(galleryRef);
 
@@ -82,6 +85,13 @@ const Gallery: FC = () => {
       console.log('🚀 ~ file: index.tsx ~ line 44 ~ error', error);
     }
   };
+
+  const onToggleStepStatus = useCallback(async () => {
+    if (!step) {
+      return;
+    }
+    await updateDoc(stepRef, { isCompleted: !step.isCompleted });
+  }, [stepRef, step]);
 
   const isLoading = status === 'loading';
 
@@ -107,6 +117,14 @@ const Gallery: FC = () => {
       </IonHeader>
 
       <IonContent>
+        <IonButton
+          color={step.isCompleted ? 'primary' : 'danger'}
+          expand="full"
+          className="m-3"
+          onClick={onToggleStepStatus}
+        >
+          {step.isCompleted ? 'Completed' : 'In Progress'}
+        </IonButton>
         <IonGrid>
           <IonRow>
             {galleryData.map((image: any) => (

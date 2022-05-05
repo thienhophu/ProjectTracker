@@ -24,6 +24,8 @@ import {
   IonPopover,
   IonRange,
   IonText,
+  IonBadge,
+  IonNote,
 } from '@ionic/react';
 import { addDoc, collection, deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import { maxBy, orderBy } from 'lodash';
@@ -32,6 +34,7 @@ import { useHistory, useParams } from 'react-router';
 import { GALLERY_PAGE, PROJECTS_PAGE, STEPS_PAGE } from '../../app/routes';
 import { useFirestore, useFirestoreCollectionData, useFirestoreDocData } from 'reactfire';
 import './styles.css';
+import clsx from 'clsx';
 
 const SingleStep: React.FC<{
   step: any;
@@ -54,6 +57,11 @@ const SingleStep: React.FC<{
           <h2>{step.name}</h2>
           <p>{step.description}</p>
         </IonLabel>
+        <IonNote>
+          <IonBadge color={step.isCompleted ? 'primary' : 'danger'} className={clsx('mt-1')}>
+            {step.isCompleted ? 'Completed' : 'In Progress'}
+          </IonBadge>
+        </IonNote>
         <IonReorder slot="end" />
       </IonItem>
       <IonItemOptions side="end">
