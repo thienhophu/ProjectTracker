@@ -3,6 +3,7 @@ import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import type { RootState, AppDispatch } from './store';
 import { useStorage } from 'reactfire';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+import { roles } from '../data/roles';
 
 // Use throughout your app instead of plain `useDispatch` and `useSelector`
 export const useAppDispatch = () => useDispatch<AppDispatch>();
@@ -38,4 +39,14 @@ export const usePhotoGallery = () => {
   return {
     takePhoto,
   };
+};
+
+export const usePermissions = ({ permission, user }: any) => {
+  const accessPermissions = roles.find((r) => r.id === user.role)?.permissions;
+
+  if (accessPermissions) {
+    return accessPermissions.includes(permission);
+  }
+
+  return false;
 };

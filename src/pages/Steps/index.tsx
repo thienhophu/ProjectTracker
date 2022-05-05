@@ -35,6 +35,12 @@ import { GALLERY_PAGE, PROJECTS_PAGE, STEPS_PAGE } from '../../app/routes';
 import { useFirestore, useFirestoreCollectionData, useFirestoreDocData } from 'reactfire';
 import './styles.css';
 import clsx from 'clsx';
+import {
+  PERMISSION_PROJECT_DELETE,
+  PERMISSION_STEP_CREATE,
+  PERMISSION_STEP_DELETE,
+} from '../../data/permissions';
+import PermissionBox from '../../components/PermissionBox';
 
 const SingleStep: React.FC<{
   step: any;
@@ -65,9 +71,11 @@ const SingleStep: React.FC<{
         <IonReorder slot="end" />
       </IonItem>
       <IonItemOptions side="end">
-        <IonItemOption color="danger" onClick={onClickDelete}>
-          Delete
-        </IonItemOption>
+        <PermissionBox has={PERMISSION_STEP_DELETE}>
+          <IonItemOption color="danger" onClick={onClickDelete}>
+            Delete
+          </IonItemOption>
+        </PermissionBox>
       </IonItemOptions>
     </IonItemSliding>
   );
@@ -264,12 +272,16 @@ const Steps: React.FC = () => {
             ))}
           </IonReorderGroup>
         </IonList>
-        <IonButton expand="full" onClick={onCreateStep} className="mt-8">
-          Create Step
-        </IonButton>
-        <IonButton expand="full" color="danger" onClick={onDeleteProject}>
-          Delete Project
-        </IonButton>
+        <PermissionBox has={PERMISSION_STEP_CREATE}>
+          <IonButton expand="full" onClick={onCreateStep} className="mt-8">
+            Create Step
+          </IonButton>
+        </PermissionBox>
+        <PermissionBox has={PERMISSION_PROJECT_DELETE}>
+          <IonButton expand="full" color="danger" onClick={onDeleteProject}>
+            Delete Project
+          </IonButton>
+        </PermissionBox>
       </IonContent>
     </IonPage>
   );

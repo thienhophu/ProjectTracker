@@ -22,6 +22,8 @@ import { useFirestore, useFirestoreCollectionData, useFirestoreDocData } from 'r
 import { useParams } from 'react-router';
 import { setDoc, deleteDoc, doc, collection, updateDoc } from 'firebase/firestore';
 import { FC, useCallback, useState } from 'react';
+import { PERMISSION_GALLERY_DELETE, PERMISSION_GALLERY_UPLOAD } from '../../data/permissions';
+import PermissionBox from '../../components/PermissionBox';
 
 const SingleImage: FC<{ image: any; onDelete: Function }> = ({ image, onDelete }) => {
   const [present] = useIonAlert();
@@ -46,15 +48,17 @@ const SingleImage: FC<{ image: any; onDelete: Function }> = ({ image, onDelete }
   return (
     <IonCol size="6" className="h-40">
       <IonImg src={image.imageURL} className="w-full h-full" />
-      <IonIcon
-        icon={removeCircle}
-        color="danger"
-        onClick={onClickDelete}
-        className="absolute top-2 right-2 w-8 h-8"
-        style={{ width: 30, height: 30 }}
-      >
-        DELETE
-      </IonIcon>
+      <PermissionBox has={PERMISSION_GALLERY_DELETE}>
+        <IonIcon
+          icon={removeCircle}
+          color="danger"
+          onClick={onClickDelete}
+          className="absolute top-2 right-2 w-8 h-8"
+          style={{ width: 30, height: 30 }}
+        >
+          DELETE
+        </IonIcon>
+      </PermissionBox>
     </IonCol>
   );
 };
@@ -109,9 +113,11 @@ const Gallery: FC = () => {
           <IonTitle>Gallery</IonTitle>
 
           <IonButtons slot="end">
-            <IonButton onClick={uploadPhoto}>
-              <IonLabel>Upload</IonLabel>
-            </IonButton>
+            <PermissionBox has={PERMISSION_GALLERY_UPLOAD}>
+              <IonButton onClick={uploadPhoto}>
+                <IonLabel>Upload</IonLabel>
+              </IonButton>
+            </PermissionBox>
           </IonButtons>
         </IonToolbar>
       </IonHeader>

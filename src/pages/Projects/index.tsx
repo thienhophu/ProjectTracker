@@ -16,6 +16,8 @@ import { CREATE_PROJECT } from '../../app/routes';
 import ProjectCard from './components/ProjectCard';
 import { logout } from '../../services/auth';
 import { useDispatch } from 'react-redux';
+import { PERMISSION_PROJECT_CREATE } from '../../data/permissions';
+import PermissionBox from '../../components/PermissionBox';
 
 const Projects: React.FC = () => {
   const dispatch = useDispatch();
@@ -43,9 +45,11 @@ const Projects: React.FC = () => {
           <IonTitle>Project Tracker</IonTitle>
 
           <IonButtons slot="end">
-            <IonButton routerLink={CREATE_PROJECT}>
-              <IonLabel>Create</IonLabel>
-            </IonButton>
+            <PermissionBox has={PERMISSION_PROJECT_CREATE}>
+              <IonButton routerLink={CREATE_PROJECT}>
+                <IonLabel>Create</IonLabel>
+              </IonButton>
+            </PermissionBox>
           </IonButtons>
         </IonToolbar>
       </IonHeader>
