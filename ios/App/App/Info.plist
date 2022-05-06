@@ -51,10 +51,10 @@
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
-	<string>My app uses photos for furniture and architecture</string>
+	<string>$(PRODUCT_NAME) uses photos for furniture and architecture</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>My app uses photos for furniture and architecture</string>
+	<string>$(PRODUCT_NAME) uses photos for furniture and architecture</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>My app uses photos for furniture and architecture</string>
+	<string>$(PRODUCT_NAME) uses photos for furniture and architecture</string>
 </dict>
 </plist>
