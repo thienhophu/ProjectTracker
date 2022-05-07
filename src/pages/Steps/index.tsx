@@ -26,6 +26,8 @@ import {
   IonText,
   IonBadge,
   IonNote,
+  IonGrid,
+  IonRow,
 } from '@ionic/react';
 import { addDoc, collection, deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import { maxBy, orderBy } from 'lodash';
@@ -39,7 +41,8 @@ import {
   PERMISSION_PROJECT_DELETE,
   PERMISSION_STEP_CREATE,
   PERMISSION_STEP_DELETE,
-} from '../../data/permissions';
+  PERMISSION_STEP_REORDER,
+} from '../../data/roles';
 import PermissionBox from '../../components/PermissionBox';
 
 const SingleStep: React.FC<{
@@ -242,9 +245,11 @@ const Steps: React.FC = () => {
             <IonBackButton defaultHref="/" />
           </IonButtons>
           <IonTitle>Steps</IonTitle>
-          <IonButtons slot="end">
-            <IonButton onClick={onToggleReorder}>{reorderText}</IonButton>
-          </IonButtons>
+          <PermissionBox has={PERMISSION_STEP_REORDER}>
+            <IonButtons slot="end">
+              <IonButton onClick={onToggleReorder}>{reorderText}</IonButton>
+            </IonButtons>
+          </PermissionBox>
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
@@ -266,6 +271,13 @@ const Steps: React.FC = () => {
             <IonRange min={0} max={100} pin color="secondary"></IonRange>
           </IonPopover>
 
+          {orderedSteps.length === 0 && (
+            <IonGrid>
+              <IonRow>
+                <IonLabel className="text-center w-full">There is no steps.</IonLabel>
+              </IonRow>
+            </IonGrid>
+          )}
           <IonReorderGroup disabled={!enableReorder} onIonItemReorder={doReorder}>
             {orderedSteps.map((step: any) => (
               <SingleStep key={step.NO_ID_FIELD} step={step} onDelete={deleteStep} />

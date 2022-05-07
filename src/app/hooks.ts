@@ -42,9 +42,9 @@ export const usePhotoGallery = () => {
 };
 
 export const usePermissions = ({ permission, user }: any) => {
-  const accessPermissions = roles.find((r) => r.id === user.role)?.permissions;
+  const accessPermissions = (user && roles.find((r) => r.id === user.role)?.permissions) || [];
 
-  if (accessPermissions) {
+  if (accessPermissions.length > 0) {
     return accessPermissions.includes(permission);
   }
 

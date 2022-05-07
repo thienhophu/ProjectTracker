@@ -15,6 +15,7 @@ import {
   IonRadio,
   IonLabel,
   useIonToast,
+  useIonLoading,
 } from '@ionic/react';
 import { register } from '../services/auth';
 import { LOGIN } from '../app/routes';
@@ -27,11 +28,15 @@ const Register: React.FC = () => {
   const [role, setRole] = useState<string>('manager');
   const [presentCreateStepToast] = useIonToast();
   const { push } = useHistory();
+  const [presentLoading, dismissLoading] = useIonLoading();
 
   const registerUser = async () => {
     try {
+      presentLoading({
+        message: 'Loading...',
+      });
       await dispatch(register(username, password, role));
-
+      await dismissLoading();
       presentCreateStepToast({
         message: 'New Account created!',
         color: 'success',

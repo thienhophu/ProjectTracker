@@ -22,7 +22,7 @@ import { useFirestore, useFirestoreCollectionData, useFirestoreDocData } from 'r
 import { useParams } from 'react-router';
 import { setDoc, deleteDoc, doc, collection, updateDoc } from 'firebase/firestore';
 import { FC, useCallback, useState } from 'react';
-import { PERMISSION_GALLERY_DELETE, PERMISSION_GALLERY_UPLOAD } from '../../data/permissions';
+import { PERMISSION_GALLERY_DELETE, PERMISSION_GALLERY_UPLOAD } from '../../data/roles';
 import PermissionBox from '../../components/PermissionBox';
 
 const SingleImage: FC<{ image: any; onDelete: Function }> = ({ image, onDelete }) => {
@@ -71,7 +71,6 @@ const Gallery: FC = () => {
 
   const stepRef = doc(firestore, `projects/${id}/steps/${stepId}`);
   const { data: step } = useFirestoreDocData(stepRef);
-  console.log('🚀 ~ stepData', step);
   const galleryRef = collection(firestore, `projects/${id}/steps/${stepId}/gallery`);
   const { status, data: galleryData } = useFirestoreCollectionData(galleryRef);
 
@@ -123,16 +122,21 @@ const Gallery: FC = () => {
       </IonHeader>
 
       <IonContent>
-        <IonButton
-          color={step.isCompleted ? 'primary' : 'danger'}
-          expand="full"
-          className="m-3"
-          onClick={onToggleStepStatus}
-        >
-          {step.isCompleted ? 'Completed' : 'In Progress'}
-        </IonButton>
+        <PermissionBox has={PERMISSION_GALLERY_UPLOAD}>
+          <IonButton
+            color={step.isCompleted ? 'primary' : 'danger'}
+            expand="full"
+            className="m-3"
+            onClick={onToggleStepStatus}
+          >
+            {step.isCompleted ? 'Completed' : 'In Progress'}
+          </IonButton>
+        </PermissionBox>
         <IonGrid>
           <IonRow>
+            {galleryData.length === 0 && (
+              <IonLabel className="text-center w-full">There is no images.</IonLabel>
+            )}
             {galleryData.map((image: any) => (
               <SingleImage key={image.NO_ID_FIELD} image={image} onDelete={deleteItem} />
             ))}
