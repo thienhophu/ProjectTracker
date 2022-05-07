@@ -19,14 +19,17 @@ import {
 import { removeCircle } from 'ionicons/icons';
 import { usePhotoGallery } from '../../app/hooks';
 import { useFirestore, useFirestoreCollectionData, useFirestoreDocData } from 'reactfire';
-import { useParams } from 'react-router';
+import { useHistory, useParams } from 'react-router';
 import { setDoc, deleteDoc, doc, collection, updateDoc } from 'firebase/firestore';
 import { FC, useCallback, useState } from 'react';
 import { PERMISSION_GALLERY_DELETE, PERMISSION_GALLERY_UPLOAD } from '../../data/roles';
 import PermissionBox from '../../components/PermissionBox';
+import { COMMENTS_PAGE, GALLERY_PAGE, PROJECTS_PAGE, STEPS_PAGE } from '../../app/routes';
 
 const SingleImage: FC<{ image: any; onDelete: Function }> = ({ image, onDelete }) => {
   const [present] = useIonAlert();
+  const { push } = useHistory();
+  const { id, stepId } = useParams<any>();
 
   const onClickDelete = useCallback(() => {
     present({
@@ -45,9 +48,15 @@ const SingleImage: FC<{ image: any; onDelete: Function }> = ({ image, onDelete }
     });
   }, [image, onDelete, present]);
 
+  const onClick = useCallback(() => {
+    push(
+      `${PROJECTS_PAGE}/${id}${STEPS_PAGE}/${stepId}${GALLERY_PAGE}/${image.NO_ID_FIELD}${COMMENTS_PAGE}`,
+    );
+  }, [push, stepId, id, image.NO_ID_FIELD]);
+
   return (
     <IonCol size="6" className="h-40">
-      <IonImg src={image.imageURL} className="w-full h-full" />
+      <IonImg src={image.imageURL} className="w-full h-full" onClick={onClick} />
       <PermissionBox has={PERMISSION_GALLERY_DELETE}>
         <IonIcon
           icon={removeCircle}

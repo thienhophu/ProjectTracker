@@ -34,6 +34,7 @@ import {
   CREATE_PROJECT,
   PROJECTS_PAGE,
   REGISTER,
+  COMMENTS_PAGE,
 } from './app/routes';
 import Gallery from './pages/Gallery';
 import Test from './pages/Test';
@@ -45,6 +46,7 @@ import { AuthProvider, FirestoreProvider, StorageProvider, useFirebaseApp } from
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
+import Comments from './pages/Comments';
 
 setupIonicReact({
   mode: 'ios',
@@ -72,6 +74,11 @@ const App: React.FC = () => {
                       exact
                       path={`${PROJECTS_PAGE}/:id${STEPS_PAGE}/:stepId${GALLERY_PAGE}`}
                       component={Gallery}
+                    />
+                    <Route
+                      exact
+                      path={`${PROJECTS_PAGE}/:id${STEPS_PAGE}/:stepId${GALLERY_PAGE}/:imageId${COMMENTS_PAGE}`}
+                      component={Comments}
                     />
                     <Route exact path={'/test'} component={Test} />
                     <Redirect exact from="/" to={DASHBOARD_PAGE} />
