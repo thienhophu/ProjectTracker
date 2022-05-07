@@ -246,8 +246,14 @@ const Steps: React.FC = () => {
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
-        <IonModal isOpen={showProgressModal} onDidDismiss={() => setShowProgressModal(false)}>
-          <IonHeader>Progress {projectData.progress}%</IonHeader>
+        <IonModal
+          className="progress-modal"
+          isOpen={showProgressModal}
+          onDidDismiss={() => setShowProgressModal(false)}
+        >
+          <IonHeader className="px-3 pt-2">
+            <b>Progress {projectData.progress}%</b>
+          </IonHeader>
           <IonContent>
             <IonRange
               debounce={500}
