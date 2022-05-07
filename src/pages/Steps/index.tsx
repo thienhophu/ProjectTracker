@@ -21,13 +21,10 @@ import {
   useIonAlert,
   useIonToast,
   IonListHeader,
-  IonPopover,
-  IonRange,
-  IonText,
   IonBadge,
   IonNote,
-  IonGrid,
-  IonRow,
+  IonRange,
+  IonModal,
 } from '@ionic/react';
 import { addDoc, collection, deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import { maxBy, orderBy } from 'lodash';
@@ -36,7 +33,6 @@ import { useHistory, useParams } from 'react-router';
 import { GALLERY_PAGE, PROJECTS_PAGE, STEPS_PAGE } from '../../app/routes';
 import { useFirestore, useFirestoreCollectionData, useFirestoreDocData } from 'reactfire';
 import './styles.css';
-import clsx from 'clsx';
 import {
   PERMISSION_PROJECT_DELETE,
   PERMISSION_STEP_CREATE,
@@ -67,7 +63,7 @@ const SingleStep: React.FC<{
           <p>{step.description}</p>
         </IonLabel>
         <IonNote>
-          <IonBadge color={step.isCompleted ? 'primary' : 'danger'} className={clsx('mt-1')}>
+          <IonBadge color={step.isCompleted ? 'primary' : 'danger'} className="mt-1">
             {step.isCompleted ? 'Completed' : 'In Progress'}
           </IonBadge>
         </IonNote>
@@ -92,7 +88,7 @@ const Steps: React.FC = () => {
   const [present] = useIonAlert();
   const [createStepAlert] = useIonAlert();
   const [presentCreateStepToast] = useIonToast();
-  const [popoverState, setIsShowPopover] = useState({ isShowPopover: false, event: undefined });
+  const [showProgressModal, setShowProgressModal] = useState(false);
 
   const projectRef = doc(firestore, 'projects', id);
   const stepRef = collection(firestore, `projects/${id}/steps`);
@@ -219,17 +215,14 @@ const Steps: React.FC = () => {
     });
   }, [presentCreateStepToast, createStepAlert, stepRef, stepsData]);
 
-  const showPopover = useCallback(
-    (e: any) => {
-      e.persist();
-      setIsShowPopover({ isShowPopover: true, event: e });
+  const onSaveProgress = useCallback(
+    async (value) => {
+      await updateDoc(doc(firestore, `projects`, id), {
+        progress: value,
+      });
     },
-    [setIsShowPopover],
+    [firestore, id],
   );
-
-  const onHideProjectPopover = useCallback(() => {
-    setIsShowPopover({ isShowPopover: false, event: undefined });
-  }, [setIsShowPopover]);
 
   const isLoading = status === 'loading';
 
@@ -253,31 +246,28 @@ const Steps: React.FC = () => {
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
+        <IonModal isOpen={showProgressModal} onDidDismiss={() => setShowProgressModal(false)}>
+          <IonHeader>Progress {projectData.progress}%</IonHeader>
+          <IonContent>
+            <IonRange
+              debounce={500}
+              min={0}
+              max={100}
+              pin
+              color="secondary"
+              value={projectData.progress}
+              onIonChange={(e) => onSaveProgress(e.detail.value)}
+            />
+          </IonContent>
+        </IonModal>
         <IonList>
           <IonListHeader lines="inset" className="mb-8">
             <IonLabel>{projectData.name}</IonLabel>
-            <IonLabel className="text-right pr-8" onClick={showPopover}>
-              {projectData.progress ?? 0}%
+            <IonLabel onClick={() => setShowProgressModal(true)} className="text-right pr-8">
+              {projectData.progress}%
             </IonLabel>
           </IonListHeader>
 
-          <IonPopover
-            event={popoverState.event}
-            isOpen={popoverState.isShowPopover}
-            onDidDismiss={onHideProjectPopover}
-            alignment="center"
-          >
-            <IonText className="ion-padding">Progress {projectData.progress ?? 0}%</IonText>
-            <IonRange min={0} max={100} pin color="secondary"></IonRange>
-          </IonPopover>
-
-          {orderedSteps.length === 0 && (
-            <IonGrid>
-              <IonRow>
-                <IonLabel className="text-center w-full">There is no steps.</IonLabel>
-              </IonRow>
-            </IonGrid>
-          )}
           <IonReorderGroup disabled={!enableReorder} onIonItemReorder={doReorder}>
             {orderedSteps.map((step: any) => (
               <SingleStep key={step.NO_ID_FIELD} step={step} onDelete={deleteStep} />
