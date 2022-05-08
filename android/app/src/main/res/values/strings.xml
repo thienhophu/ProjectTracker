@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">project-tracker</string>
+    <string name="app_name">Project Tracker</string>
     <string name="title_activity_main">project-tracker</string>
     <string name="package_name">au.projecttracker.app</string>
     <string name="custom_url_scheme">au.projecttracker.app</string>
