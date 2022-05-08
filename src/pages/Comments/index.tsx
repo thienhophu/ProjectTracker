@@ -13,11 +13,15 @@ import {
   IonItemDivider,
   IonList,
   IonItem,
+  IonModal,
+  IonTextarea,
+  IonButton,
+  IonFooter,
 } from '@ionic/react';
 import { useFirestore, useFirestoreDocDataOnce } from 'reactfire';
 import { useParams } from 'react-router';
 import { doc } from 'firebase/firestore';
-import { FC } from 'react';
+import { FC, useCallback, useState } from 'react';
 
 const SingleComment: FC = () => {
   return (
@@ -26,7 +30,7 @@ const SingleComment: FC = () => {
         <h2>
           <b>Thien Ho</b> <span>- 2 mins</span>
         </h2>
-        <caption>Comment on image.</caption>
+        <span>Comment on image.</span>
       </IonLabel>
     </IonItem>
   );
@@ -35,9 +39,18 @@ const SingleComment: FC = () => {
 const Comments: FC = () => {
   const firestore = useFirestore();
   const { id, stepId, imageId } = useParams<any>();
+  const [showModal, setShowModal] = useState(false);
 
   const imageRef = doc(firestore, `projects/${id}/steps/${stepId}/gallery`, imageId);
   const { status, data: image } = useFirestoreDocDataOnce(imageRef);
+
+  const openAddCommentModal = useCallback(() => {
+    setShowModal(true);
+  }, [setShowModal]);
+
+  const closeAddCommentModal = useCallback(() => {
+    setShowModal(false);
+  }, [setShowModal]);
 
   const isLoading = status === 'loading';
 
@@ -82,6 +95,34 @@ const Comments: FC = () => {
           <SingleComment />
         </IonList>
       </IonContent>
+
+      <IonModal isOpen={showModal} breakpoints={[0.5, 1]} initialBreakpoint={0.5}>
+        <IonHeader>
+          <IonToolbar>
+            <IonTitle>Add comment</IonTitle>
+            <IonButtons slot="end">
+              <IonButton color="danger" onClick={closeAddCommentModal}>
+                Cancel
+              </IonButton>
+            </IonButtons>
+          </IonToolbar>
+        </IonHeader>
+        <IonContent fullscreen>
+          <IonItem>
+            <IonLabel position="stacked">Comment</IonLabel>
+            <IonTextarea rows={6} />
+          </IonItem>
+
+          <IonButton expand="full" className="m-4">
+            Comment
+          </IonButton>
+        </IonContent>
+      </IonModal>
+      <IonFooter>
+        <IonButton expand="full" onClick={openAddCommentModal}>
+          Add Comment
+        </IonButton>
+      </IonFooter>
     </IonPage>
   );
 };
