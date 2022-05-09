@@ -4,6 +4,7 @@ import type { RootState, AppDispatch } from './store';
 import { useStorage } from 'reactfire';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { roles } from '../data/roles';
+import { getCurrentUserData } from '../features/auth/authSlice';
 
 // Use throughout your app instead of plain `useDispatch` and `useSelector`
 export const useAppDispatch = () => useDispatch<AppDispatch>();
@@ -49,4 +50,10 @@ export const usePermissions = ({ permission, user }: any) => {
   }
 
   return false;
+};
+
+export const useCurrentUserPermission = ({ permission }: any) => {
+  const user = useAppSelector(getCurrentUserData);
+
+  return usePermissions({permission, user});
 };

@@ -35,11 +35,13 @@ import { useFirestore, useFirestoreCollectionData, useFirestoreDocData } from 'r
 import './styles.css';
 import {
   PERMISSION_PROJECT_DELETE,
+  PERMISSION_PROJECT_UPDATE_PROGRESS,
   PERMISSION_STEP_CREATE,
   PERMISSION_STEP_DELETE,
   PERMISSION_STEP_REORDER,
 } from '../../data/roles';
 import PermissionBox from '../../components/PermissionBox';
+import { useCurrentUserPermission } from '../../app/hooks';
 
 const SingleStep: React.FC<{
   step: any;
@@ -89,6 +91,10 @@ const Steps: React.FC = () => {
   const [createStepAlert] = useIonAlert();
   const [presentCreateStepToast] = useIonToast();
   const [showProgressModal, setShowProgressModal] = useState(false);
+
+  const ableToUpdateProjectProgress = useCurrentUserPermission({
+    permission: PERMISSION_PROJECT_UPDATE_PROGRESS,
+  });
 
   const projectRef = doc(firestore, 'projects', id);
   const stepRef = collection(firestore, `projects/${id}/steps`);
@@ -224,6 +230,21 @@ const Steps: React.FC = () => {
     [firestore, id],
   );
 
+  const showProjectProgressModal = useCallback(() => {
+    setShowProgressModal(true);
+  }, []);
+
+  const hideProjectProgressModal = useCallback(() => {
+    setShowProgressModal(false);
+  }, []);
+
+  const onUpdateProjectProgress = useCallback(() => {
+    if (!ableToUpdateProjectProgress) {
+      return;
+    }
+    showProjectProgressModal();
+  }, [ableToUpdateProjectProgress, showProjectProgressModal]);
+
   const isLoading = status === 'loading';
 
   if (!stepsData || isLoading || !projectData) {
@@ -249,7 +270,7 @@ const Steps: React.FC = () => {
         <IonModal
           className="progress-modal"
           isOpen={showProgressModal}
-          onDidDismiss={() => setShowProgressModal(false)}
+          onDidDismiss={hideProjectProgressModal}
         >
           <IonHeader className="px-3 pt-2">
             <b>Progress {projectData.progress}%</b>
@@ -269,7 +290,7 @@ const Steps: React.FC = () => {
         <IonList>
           <IonListHeader lines="inset" className="mb-8">
             <IonLabel>{projectData.name}</IonLabel>
-            <IonLabel onClick={() => setShowProgressModal(true)} className="text-right pr-8">
+            <IonLabel onClick={onUpdateProjectProgress} className="text-right pr-8">
               {projectData.progress}%
             </IonLabel>
           </IonListHeader>

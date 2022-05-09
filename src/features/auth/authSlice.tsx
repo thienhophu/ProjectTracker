@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export interface AuthState {
   userData: any;
@@ -11,7 +11,7 @@ const initialState: AuthState = {
 };
 
 export const authSlice = createSlice({
-  name: "auth",
+  name: 'auth',
   initialState,
   reducers: {
     SET_INITIALIZED: (state, action: PayloadAction<boolean>) => {
@@ -34,5 +34,7 @@ export const authSlice = createSlice({
 
 // Action creators are generated for each case reducer function
 export const { SET_INITIALIZED, LOGIN, LOGOUT, REGISTER, SET_USER_DATA } = authSlice.actions;
+
+export const getCurrentUserData = (state: any) => state.auth.userData;
 
 export default authSlice.reducer;
