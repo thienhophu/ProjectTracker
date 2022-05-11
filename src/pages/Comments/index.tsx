@@ -18,19 +18,25 @@ import {
   IonButton,
   IonFooter,
 } from '@ionic/react';
-import { useFirestore, useFirestoreDocDataOnce } from 'reactfire';
+import { useFirestore, useFirestoreCollectionData, useFirestoreDocDataOnce } from 'reactfire';
 import { useParams } from 'react-router';
-import { doc } from 'firebase/firestore';
+import { addDoc, collection, doc, Timestamp, query, where } from 'firebase/firestore';
 import { FC, useCallback, useState } from 'react';
+import { formatDistanceToNow } from 'date-fns';
 
-const SingleComment: FC = () => {
+import { getCurrentUserData } from '../../features/auth/authSlice';
+import { useAppSelector } from '../../app/hooks';
+import { Comment } from '../../data/comment';
+
+const SingleComment: FC<{ comment: Comment }> = ({ comment }) => {
   return (
     <IonItem>
       <IonLabel>
         <h2>
-          <b>Thien Ho</b> <span>- 2 mins</span>
+          <b>{comment?.author_name}</b>{' '}
+          <span>- {formatDistanceToNow(comment?.created_at.toDate())}</span>
         </h2>
-        <span>Comment on image.</span>
+        <span>{comment?.description}</span>
       </IonLabel>
     </IonItem>
   );
@@ -38,11 +44,18 @@ const SingleComment: FC = () => {
 
 const Comments: FC = () => {
   const firestore = useFirestore();
+  const currentUser = useAppSelector(getCurrentUserData);
   const { id, stepId, imageId } = useParams<any>();
   const [showModal, setShowModal] = useState(false);
+  const [currentComment, setCurrentComment] = useState(null);
 
   const imageRef = doc(firestore, `projects/${id}/steps/${stepId}/gallery`, imageId);
   const { status, data: image } = useFirestoreDocDataOnce(imageRef);
+
+  const commentRef = collection(firestore, 'comments');
+  const { data: comments } = useFirestoreCollectionData(
+    query(commentRef, where('model_type', '==', 'gallery'), where('model_id', '==', imageId)),
+  );
 
   const openAddCommentModal = useCallback(() => {
     setShowModal(true);
@@ -51,6 +64,26 @@ const Comments: FC = () => {
   const closeAddCommentModal = useCallback(() => {
     setShowModal(false);
   }, [setShowModal]);
+
+  const onComment = useCallback(async () => {
+    if (!currentComment) {
+      return;
+    }
+
+    try {
+      await addDoc(commentRef, {
+        description: currentComment,
+        model_type: 'gallery',
+        model_id: imageId,
+        created_at: Timestamp.now(),
+        author_name: currentUser.displayName || 'Anonymous',
+      });
+    } catch (error) {
+      console.error('🚀 ~ file: index.tsx ~ line 73 ~ error', error);
+    }
+    setCurrentComment(null);
+    closeAddCommentModal();
+  }, [closeAddCommentModal, commentRef, currentComment, currentUser.displayName, imageId]);
 
   const isLoading = status === 'loading';
 
@@ -77,22 +110,16 @@ const Comments: FC = () => {
           <IonItemDivider>
             <IonLabel>Comments</IonLabel>
           </IonItemDivider>
-          <IonItem>
-            <IonLabel className="text-center">There is no comments.</IonLabel>
-          </IonItem>
-          <SingleComment />
-          <SingleComment />
-          <SingleComment />
-          <SingleComment />
-          <SingleComment />
-          <SingleComment />
-          <SingleComment />
-          <SingleComment />
-          <SingleComment />
-          <SingleComment />
-          <SingleComment />
-          <SingleComment />
-          <SingleComment />
+
+          {comments && comments.length === 0 && (
+            <IonItem>
+              <IonLabel className="text-center">There is no comments.</IonLabel>
+            </IonItem>
+          )}
+          {comments &&
+            comments.map((comment: any) => (
+              <SingleComment key={comment.NO_ID_FIELD} comment={comment} />
+            ))}
         </IonList>
       </IonContent>
 
@@ -110,10 +137,14 @@ const Comments: FC = () => {
         <IonContent fullscreen>
           <IonItem>
             <IonLabel position="stacked">Comment</IonLabel>
-            <IonTextarea rows={6} />
+            <IonTextarea
+              rows={6}
+              value={currentComment}
+              onIonChange={(e: any) => setCurrentComment(e.detail.value)}
+            />
           </IonItem>
 
-          <IonButton expand="full" className="m-4">
+          <IonButton expand="full" className="m-4" onClick={onComment}>
             Comment
           </IonButton>
         </IonContent>
