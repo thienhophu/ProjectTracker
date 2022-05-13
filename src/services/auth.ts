@@ -49,7 +49,7 @@ export const logout = () => async (dispatch: any) => {
 };
 
 export const register =
-  (username: string, password: string, role: string) => async (dispatch: any) => {
+  (displayName: string, username: string, password: string, role: string) => async (dispatch: any) => {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, username, password);
 
@@ -58,6 +58,7 @@ export const register =
         const userRef = doc(firestore, 'users', uid);
         await setDoc(userRef, {
           id: uid,
+          displayName,
           role: role,
         });
         dispatch(REGISTER({ user: userCredential.user.toJSON() }));

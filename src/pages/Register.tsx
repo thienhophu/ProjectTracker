@@ -23,6 +23,7 @@ import { useHistory } from 'react-router';
 
 const Register: React.FC = () => {
   const dispatch = useDispatch();
+  const [displayName, setDisplayName] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState<string>('manager');
@@ -35,7 +36,7 @@ const Register: React.FC = () => {
       presentLoading({
         message: 'Loading...',
       });
-      await dispatch(register(username, password, role));
+      await dispatch(register(displayName, username, password, role));
       await dismissLoading();
       presentCreateStepToast({
         message: 'New Account created!',
@@ -61,6 +62,10 @@ const Register: React.FC = () => {
       </IonHeader>
       <IonContent fullscreen>
         <IonList className="p-4">
+          <IonInput
+            placeholder="Display Name"
+            onIonChange={(e: any) => setDisplayName(e.target.value)}
+          />
           <IonInput
             placeholder="Email"
             onIonChange={(e: any) => setUsername(e.target.value)}

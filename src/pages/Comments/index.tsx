@@ -21,12 +21,13 @@ import {
 import { useFirestore, useFirestoreCollectionData, useFirestoreDocDataOnce } from 'reactfire';
 import { useParams } from 'react-router';
 import { addDoc, collection, doc, Timestamp, query, where } from 'firebase/firestore';
-import { FC, useCallback, useState } from 'react';
+import { FC, useCallback, useMemo, useState } from 'react';
 import { formatDistanceToNow } from 'date-fns';
 
 import { getCurrentUserData } from '../../features/auth/authSlice';
 import { useAppSelector } from '../../app/hooks';
 import { Comment } from '../../data/comment';
+import { orderBy } from 'lodash';
 
 const SingleComment: FC<{ comment: Comment }> = ({ comment }) => {
   return (
@@ -56,6 +57,8 @@ const Comments: FC = () => {
   const { data: comments } = useFirestoreCollectionData(
     query(commentRef, where('model_type', '==', 'gallery'), where('model_id', '==', imageId)),
   );
+
+  const orderedComments = useMemo(() => orderBy(comments, 'created_at.seconds'), [comments]);
 
   const openAddCommentModal = useCallback(() => {
     setShowModal(true);
@@ -117,7 +120,7 @@ const Comments: FC = () => {
             </IonItem>
           )}
           {comments &&
-            comments.map((comment: any) => (
+            orderedComments.map((comment: any) => (
               <SingleComment key={comment.NO_ID_FIELD} comment={comment} />
             ))}
         </IonList>
