@@ -60,7 +60,7 @@ const Register: React.FC = () => {
           <IonTitle>Register</IonTitle>
         </IonToolbar>
       </IonHeader>
-      <IonContent fullscreen>
+      <IonContent>
         <IonList className="p-4">
           <IonInput
             placeholder="Display Name"

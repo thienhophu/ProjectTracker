@@ -39,7 +39,7 @@ const Login: React.FC = () => {
           <IonTitle>Login</IonTitle>
         </IonToolbar>
       </IonHeader>
-      <IonContent fullscreen>
+      <IonContent>
         <IonList className="p-4">
           <IonInput
             placeholder="Email"

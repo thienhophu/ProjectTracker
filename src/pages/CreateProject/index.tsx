@@ -108,7 +108,7 @@ const CreateProject: React.FC = () => {
         </IonToolbar>
       </IonHeader>
 
-      <IonContent fullscreen>
+      <IonContent>
         <IonList class="ion-margin">
           <IonItem>
             <IonLabel position="stacked">Project's name</IonLabel>

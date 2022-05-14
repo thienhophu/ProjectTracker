@@ -266,7 +266,7 @@ const Steps: React.FC = () => {
           </PermissionBox>
         </IonToolbar>
       </IonHeader>
-      <IonContent fullscreen>
+      <IonContent>
         <IonModal
           className="progress-modal"
           isOpen={showProgressModal}

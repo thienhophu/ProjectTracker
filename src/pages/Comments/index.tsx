@@ -17,11 +17,12 @@ import {
   IonTextarea,
   IonButton,
   IonFooter,
+  IonSkeletonText,
 } from '@ionic/react';
 import { useFirestore, useFirestoreCollectionData, useFirestoreDocDataOnce } from 'reactfire';
 import { useParams } from 'react-router';
 import { addDoc, collection, doc, Timestamp, query, where } from 'firebase/firestore';
-import { FC, useCallback, useMemo, useState } from 'react';
+import { FC, useCallback, useMemo, useRef, useState } from 'react';
 import { formatDistanceToNow } from 'date-fns';
 
 import { getCurrentUserData } from '../../features/auth/authSlice';
@@ -43,22 +44,50 @@ const SingleComment: FC<{ comment: Comment }> = ({ comment }) => {
   );
 };
 
+const CommentSkeletons: FC = () => {
+  return (
+    <>
+      {Array(5)
+        .fill(0)
+        .map((_, index) => (
+          <IonItem key={index}>
+            <IonLabel>
+              <h2>
+                <IonSkeletonText animated style={{ width: '40%' }} />
+              </h2>
+              <span>
+                <IonSkeletonText animated style={{ width: '100%' }} />
+              </span>
+            </IonLabel>
+          </IonItem>
+        ))}
+    </>
+  );
+};
+
 const Comments: FC = () => {
   const firestore = useFirestore();
   const currentUser = useAppSelector(getCurrentUserData);
   const { id, stepId, imageId } = useParams<any>();
   const [showModal, setShowModal] = useState(false);
+  const [didLoadImage, setDidLoadImage] = useState(false);
   const [currentComment, setCurrentComment] = useState(null);
+  const contentRef: any = useRef();
 
   const imageRef = doc(firestore, `projects/${id}/steps/${stepId}/gallery`, imageId);
   const { status, data: image } = useFirestoreDocDataOnce(imageRef);
 
   const commentRef = collection(firestore, 'comments');
-  const { data: comments } = useFirestoreCollectionData(
-    query(commentRef, where('model_type', '==', 'gallery'), where('model_id', '==', imageId)),
+  const { status: commentStatus, data: comments } = useFirestoreCollectionData(
+    query(commentRef, where('model_type', '==', 'gallery'), where('model_id', 'in', [imageId])),
   );
 
-  const orderedComments = useMemo(() => orderBy(comments, 'created_at.seconds'), [comments]);
+  const isLoadingComments = useMemo(() => commentStatus === 'loading', [commentStatus]);
+
+  const orderedComments = useMemo(
+    () => orderBy(comments, 'created_at.seconds', 'desc'),
+    [comments],
+  );
 
   const openAddCommentModal = useCallback(() => {
     setShowModal(true);
@@ -81,6 +110,9 @@ const Comments: FC = () => {
         created_at: Timestamp.now(),
         author_name: currentUser.displayName || 'Anonymous',
       });
+      if (contentRef.current) {
+        contentRef.current.scrollToTop(0);
+      }
     } catch (error) {
       console.error('🚀 ~ file: index.tsx ~ line 73 ~ error', error);
     }
@@ -105,14 +137,21 @@ const Comments: FC = () => {
         </IonToolbar>
       </IonHeader>
 
-      <IonContent>
-        <IonImg src={image.imageURL} className="w-full p-4" />
+      <IonContent ref={contentRef}>
+        <IonImg
+          src={image.imageURL}
+          className={'w-full p-4'}
+          style={!didLoadImage ? { minHeight: 400 } : {}}
+          onIonImgDidLoad={() => setDidLoadImage(true)}
+        />
         <IonText className="p-4">{imageId}</IonText>
 
         <IonList className="mt-8">
           <IonItemDivider>
             <IonLabel>Comments</IonLabel>
           </IonItemDivider>
+
+          {isLoadingComments && <CommentSkeletons />}
 
           {comments && comments.length === 0 && (
             <IonItem>
@@ -126,7 +165,12 @@ const Comments: FC = () => {
         </IonList>
       </IonContent>
 
-      <IonModal isOpen={showModal} breakpoints={[0.5, 1]} initialBreakpoint={0.5}>
+      <IonModal
+        isOpen={showModal}
+        breakpoints={[0.5, 1]}
+        initialBreakpoint={0.5}
+        onDidDismiss={closeAddCommentModal}
+      >
         <IonHeader>
           <IonToolbar>
             <IonTitle>Add comment</IonTitle>
@@ -137,7 +181,7 @@ const Comments: FC = () => {
             </IonButtons>
           </IonToolbar>
         </IonHeader>
-        <IonContent fullscreen>
+        <IonContent>
           <IonItem>
             <IonLabel position="stacked">Comment</IonLabel>
             <IonTextarea

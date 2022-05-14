@@ -56,7 +56,7 @@ const Projects: React.FC = () => {
         </IonToolbar>
       </IonHeader>
 
-      <IonContent fullscreen>
+      <IonContent>
         {projects.map((project: any, index: number) => (
           <ProjectCard key={index} project={project} />
         ))}

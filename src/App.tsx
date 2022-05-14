@@ -37,7 +37,6 @@ import {
   COMMENTS_PAGE,
 } from './app/routes';
 import Gallery from './pages/Gallery';
-import Test from './pages/Test';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Projects from './pages/Projects';
@@ -80,7 +79,6 @@ const App: React.FC = () => {
                       path={`${PROJECTS_PAGE}/:id${STEPS_PAGE}/:stepId${GALLERY_PAGE}/:imageId${COMMENTS_PAGE}`}
                       component={Comments}
                     />
-                    <Route exact path={'/test'} component={Test} />
                     <Redirect exact from="/" to={DASHBOARD_PAGE} />
                   </AuthCheck>
                   <Route path={REGISTER} component={Register} />
