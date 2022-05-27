@@ -1,5 +1,6 @@
-import { useState } from 'react';
 import { useDispatch } from 'react-redux';
+import { Form } from 'react-final-form';
+import { object, string } from 'yup';
 import {
   IonContent,
   IonHeader,
@@ -20,23 +21,28 @@ import {
 import { register } from '../services/auth';
 import { LOGIN } from '../app/routes';
 import { useHistory } from 'react-router';
+import Field from '../components/Field';
+import { useFormValidation } from '../app/hooks';
 
 const Register: React.FC = () => {
   const dispatch = useDispatch();
-  const [displayName, setDisplayName] = useState('');
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [role, setRole] = useState<string>('manager');
   const [presentCreateStepToast] = useIonToast();
   const { push } = useHistory();
   const [presentLoading, dismissLoading] = useIonLoading();
+  const validationSchema = useFormValidation(
+    object().shape({
+      email: string().label('Email').required().email(),
+      name: string().label('Display Name').required(),
+      password: string().label('Password').required(),
+    }),
+  );
 
-  const registerUser = async () => {
+  const registerUser = async (values: any) => {
     try {
       presentLoading({
         message: 'Loading...',
       });
-      await dispatch(register(displayName, username, password, role));
+      await dispatch(register(values));
       await dismissLoading();
       presentCreateStepToast({
         message: 'New Account created!',
@@ -61,40 +67,46 @@ const Register: React.FC = () => {
         </IonToolbar>
       </IonHeader>
       <IonContent>
-        <IonList className="p-4">
-          <IonInput
-            placeholder="Display Name"
-            onIonChange={(e: any) => setDisplayName(e.target.value)}
-          />
-          <IonInput
-            placeholder="Email"
-            onIonChange={(e: any) => setUsername(e.target.value)}
-          ></IonInput>
-          <IonInput
-            placeholder="Password"
-            type="password"
-            onIonChange={(e: any) => setPassword(e.target.value)}
-          ></IonInput>
-          <IonList className="mt-4">
-            <IonRadioGroup value={role} onIonChange={(e: any) => setRole(e.detail.value)}>
-              <IonItem>
-                <IonLabel>Manager</IonLabel>
-                <IonRadio slot="start" value="manager" />
-              </IonItem>
+        <Form
+          initialValues={{ name: '', email: '', password: '', role: 'manager' }}
+          onSubmit={registerUser}
+          validate={validationSchema}
+          render={({ handleSubmit, submitting }) => (
+            <form onSubmit={handleSubmit}>
+              <IonList className="p-4">
+                <Field
+                  name="name"
+                  component={<IonInput type="text" placeholder="Display Name" />}
+                />
+                <Field name="email" component={<IonInput type="text" placeholder="Email" />} />
+                <Field
+                  name="password"
+                  component={<IonInput type="password" placeholder="Password" />}
+                />
 
-              <IonItem>
-                <IonLabel>User</IonLabel>
-                <IonRadio slot="start" value="user" />
-              </IonItem>
-            </IonRadioGroup>
-          </IonList>
-          <IonButton expand="full" onClick={registerUser} className="my-4">
-            Register
-          </IonButton>
-          <p>
-            Already have an account? <IonRouterLink href={LOGIN}>Login</IonRouterLink>
-          </p>
-        </IonList>
+                <IonList className="mt-4">
+                  <Field name="role" component={<IonRadioGroup />}>
+                    <IonItem>
+                      <IonLabel>Manager</IonLabel>
+                      <IonRadio slot="start" value="manager" />
+                    </IonItem>
+
+                    <IonItem>
+                      <IonLabel>User</IonLabel>
+                      <IonRadio slot="start" value="user" />
+                    </IonItem>
+                  </Field>
+                </IonList>
+                <IonButton expand="full" type="submit" className="my-4" disabled={submitting}>
+                  Register
+                </IonButton>
+                <p>
+                  Already have an account? <IonRouterLink href={LOGIN}>Login</IonRouterLink>
+                </p>
+              </IonList>
+            </form>
+          )}
+        />
       </IonContent>
     </IonPage>
   );

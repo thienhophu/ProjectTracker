@@ -24,12 +24,15 @@
     "@types/react-dom": "^16.9.10",
     "@types/react-router": "^5.1.11",
     "@types/react-router-dom": "^5.1.7",
+    "@types/yup": "^0.29.14",
     "date-fns": "^2.28.0",
+    "final-form": "^4.20.7",
     "firebase": "^9.6.11",
     "ionicons": "^5.4.0",
     "lodash": "^4.17.21",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
+    "react-final-form": "^6.5.9",
     "react-redux": "^7.2.8",
     "react-router": "^5.2.0",
     "react-router-dom": "^5.2.0",
@@ -48,7 +51,8 @@
     "workbox-range-requests": "^5.1.4",
     "workbox-routing": "^5.1.4",
     "workbox-strategies": "^5.1.4",
-    "workbox-streams": "^5.1.4"
+    "workbox-streams": "^5.1.4",
+    "yup": "^0.32.11"
   },
   "scripts": {
     "test": "react-scripts test --transformIgnorePatterns 'node_modules/(?!(@ionic/react|@ionic/react-router|@ionic/core|@stencil/core|ionicons)/)'",

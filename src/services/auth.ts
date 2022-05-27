@@ -25,8 +25,8 @@ export const setAuthListener = () => (dispatch: any, state: any) => {
   });
 };
 
-export const login = (username: string, password: string) => async (dispatch: any, state: any) => {
-  await signInWithEmailAndPassword(auth, username, password)
+export const login = (values: any) => async (dispatch: any, state: any) => {
+  await signInWithEmailAndPassword(auth, values.username, values.password)
     .then((userCredential) => {
       // Signed in
       dispatch(LOGIN({ user: userCredential.user.toJSON() }));
@@ -48,25 +48,28 @@ export const logout = () => async (dispatch: any) => {
   }
 };
 
-export const register =
-  (displayName: string, username: string, password: string, role: string) => async (dispatch: any) => {
-    try {
-      const userCredential = await createUserWithEmailAndPassword(auth, username, password);
+export const register = (values: any) => async (dispatch: any) => {
+  try {
+    const userCredential = await createUserWithEmailAndPassword(
+      auth,
+      values.username,
+      values.password,
+    );
 
-      if (userCredential) {
-        const uid = userCredential.user.uid;
-        const userRef = doc(firestore, 'users', uid);
-        await setDoc(userRef, {
-          id: uid,
-          displayName,
-          role: role,
-        });
-        dispatch(REGISTER({ user: userCredential.user.toJSON() }));
-      }
-    } catch (error) {
-      throw error;
+    if (userCredential) {
+      const uid = userCredential.user.uid;
+      const userRef = doc(firestore, 'users', uid);
+      await setDoc(userRef, {
+        id: uid,
+        displayName: values.displayName,
+        role: values.role,
+      });
+      dispatch(REGISTER({ user: userCredential.user.toJSON() }));
     }
-  };
+  } catch (error) {
+    throw error;
+  }
+};
 
 export const getCurrentUserData = () => async (dispatch: any, state: any) => {
   let userData = null;

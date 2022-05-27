@@ -5,6 +5,7 @@ import { useStorage } from 'reactfire';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { roles } from '../data/roles';
 import { getCurrentUserData } from '../features/auth/authSlice';
+import { useCallback } from 'react';
 
 // Use throughout your app instead of plain `useDispatch` and `useSelector`
 export const useAppDispatch = () => useDispatch<AppDispatch>();
@@ -55,5 +56,34 @@ export const usePermissions = ({ permission, user }: any) => {
 export const useCurrentUserPermission = ({ permission }: any) => {
   const user = useAppSelector(getCurrentUserData);
 
-  return usePermissions({permission, user});
+  return usePermissions({ permission, user });
 };
+
+// Form Validation
+export const useFormValidation = (schema: any) =>
+  useCallback(
+    async (values) => {
+      try {
+        await schema.validate(values, { abortEarly: false });
+      } catch (yupError: any) {
+        const errors = {};
+
+        if (yupError.inner) {
+          if (yupError.inner.length === 0) {
+            errors[yupError.path] = yupError.message;
+          } else {
+            yupError.inner.forEach((err: any) => {
+              if (!errors[err.path]) {
+                errors[err.path] = err.message;
+              }
+            });
+          }
+        }
+
+        return errors;
+      }
+
+      return {};
+    },
+    [schema],
+  );

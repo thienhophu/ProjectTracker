@@ -1,5 +1,6 @@
-import { useState } from 'react';
 import { useDispatch } from 'react-redux';
+import { Form } from 'react-final-form';
+import { object, string } from 'yup';
 import {
   IonContent,
   IonHeader,
@@ -15,19 +16,25 @@ import {
 import { login } from '../services/auth';
 import { DASHBOARD_PAGE, REGISTER } from '../app/routes';
 import { useHistory } from 'react-router';
+import { useFormValidation } from '../app/hooks';
+import Field from '../components/Field';
 
 const Login: React.FC = () => {
   const dispatch = useDispatch();
   const { push } = useHistory();
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
   const [presentLoading, dismissLoading] = useIonLoading();
+  const validationSchema = useFormValidation(
+    object().shape({
+      email: string().label('Email').required().email(),
+      password: string().label('Password').required(),
+    }),
+  );
 
-  const loginUser = async () => {
+  const loginUser = async (values: any) => {
     presentLoading({
       message: 'Loading...',
     });
-    await dispatch(login(username, password));
+    await dispatch(login(values));
     await dismissLoading();
     push(DASHBOARD_PAGE);
   };
@@ -40,23 +47,28 @@ const Login: React.FC = () => {
         </IonToolbar>
       </IonHeader>
       <IonContent>
-        <IonList className="p-4">
-          <IonInput
-            placeholder="Email"
-            onIonChange={(e: any) => setUsername(e.target.value)}
-          ></IonInput>
-          <IonInput
-            placeholder="Password"
-            type="password"
-            onIonChange={(e: any) => setPassword(e.target.value)}
-          ></IonInput>
-          <IonButton expand="full" onClick={loginUser} className="my-4">
-            Login
-          </IonButton>
-          <p>
-            New here? <IonRouterLink href={REGISTER}>Register</IonRouterLink>
-          </p>
-        </IonList>
+        <Form
+          initialValues={{ name: '', email: '', password: '', role: 'manager' }}
+          onSubmit={loginUser}
+          validate={validationSchema}
+          render={({ handleSubmit, submitting }) => (
+            <form onSubmit={handleSubmit}>
+              <IonList className="p-4">
+                <Field name="email" component={<IonInput type="text" placeholder="Email" />} />
+                <Field
+                  name="password"
+                  component={<IonInput type="password" placeholder="Password" />}
+                />
+                <IonButton expand="full" type="submit" className="my-4" disabled={submitting}>
+                  Login
+                </IonButton>
+                <p>
+                  New here? <IonRouterLink href={REGISTER}>Register</IonRouterLink>
+                </p>
+              </IonList>
+            </form>
+          )}
+        />
       </IonContent>
     </IonPage>
   );
