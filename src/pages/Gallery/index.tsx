@@ -23,8 +23,8 @@ import { useHistory, useParams } from 'react-router';
 import { setDoc, deleteDoc, doc, collection, updateDoc } from 'firebase/firestore';
 import { FC, useCallback, useState } from 'react';
 import { PERMISSION_GALLERY_DELETE, PERMISSION_GALLERY_UPLOAD } from '../../data/roles';
-import PermissionBox from '../../components/PermissionBox';
 import { COMMENTS_PAGE, GALLERY_PAGE, PROJECTS_PAGE, STEPS_PAGE } from '../../app/routes';
+import PermissionBox from '../../components/PermissionBox';
 
 const SingleImage: FC<{ image: any; onDelete: Function }> = ({ image, onDelete }) => {
   const [present] = useIonAlert();
@@ -75,7 +75,7 @@ const SingleImage: FC<{ image: any; onDelete: Function }> = ({ image, onDelete }
 const Gallery: FC = () => {
   const firestore = useFirestore();
   const [uploading, setUploading] = useState(false);
-  const { takePhoto } = usePhotoGallery();
+  const { getPhotos } = usePhotoGallery();
   const { id, stepId } = useParams<any>();
 
   const stepRef = doc(firestore, `projects/${id}/steps/${stepId}`);
@@ -84,9 +84,13 @@ const Gallery: FC = () => {
   const { status, data: galleryData } = useFirestoreCollectionData(galleryRef);
 
   const uploadPhoto = async () => {
-    const snapshot = await takePhoto();
+    const images = await getPhotos();
+    console.log('🚀 ~ file: index.tsx ~ line 89 ~ images', images);
+    console.log('🚀 ~ file: index.tsx ~ line 89 ~ images', images.length);
     setUploading(true);
-    await setDoc(doc(galleryRef, snapshot.name), { imageURL: snapshot.photoURL });
+    images.forEach(async (snapshot: any) => {
+      await setDoc(doc(galleryRef, snapshot.name), { imageURL: snapshot.photoURL });
+    });
     setUploading(false);
   };
 
