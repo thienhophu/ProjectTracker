@@ -18,9 +18,15 @@ import {
 } from '@ionic/react';
 import { removeCircle } from 'ionicons/icons';
 import { usePhotoGallery } from '../../app/hooks';
-import { useFirestore, useFirestoreCollectionData, useFirestoreDocData } from 'reactfire';
+import {
+  useFirestore,
+  useFirestoreCollectionData,
+  useFirestoreDocData,
+  useStorage,
+} from 'reactfire';
 import { useHistory, useParams } from 'react-router';
 import { setDoc, deleteDoc, doc, collection, updateDoc } from 'firebase/firestore';
+import { ref, uploadBytesResumable, getDownloadURL, deleteObject } from 'firebase/storage';
 import { FC, useCallback, useState } from 'react';
 import { PERMISSION_GALLERY_DELETE, PERMISSION_GALLERY_UPLOAD } from '../../data/roles';
 import { COMMENTS_PAGE, GALLERY_PAGE, PROJECTS_PAGE, STEPS_PAGE } from '../../app/routes';
@@ -77,6 +83,7 @@ const Gallery: FC = () => {
   const [uploading, setUploading] = useState(false);
   const { getPhotos } = usePhotoGallery();
   const { id, stepId } = useParams<any>();
+  const storage = useStorage();
 
   const stepRef = doc(firestore, `projects/${id}/steps/${stepId}`);
   const { data: step } = useFirestoreDocData(stepRef);
@@ -84,12 +91,17 @@ const Gallery: FC = () => {
   const { status, data: galleryData } = useFirestoreCollectionData(galleryRef);
 
   const uploadPhoto = async () => {
-    const images = await getPhotos();
-    console.log('🚀 ~ file: index.tsx ~ line 89 ~ images', images);
-    console.log('🚀 ~ file: index.tsx ~ line 89 ~ images', images.length);
+    const photos = await getPhotos();
     setUploading(true);
-    images.forEach(async (snapshot: any) => {
-      await setDoc(doc(galleryRef, snapshot.name), { imageURL: snapshot.photoURL });
+    photos.forEach(async (photo) => {
+      const fileName = new Date().getTime() + '.jpeg';
+      const response = await fetch(photo.webPath!);
+      const blob = await response.blob();
+      const newRef = ref(storage, `images/${fileName}`);
+      const uploadTask = await uploadBytesResumable(newRef, blob);
+      const photoURL = await getDownloadURL(uploadTask.ref);
+
+      await setDoc(doc(galleryRef, fileName), { imageURL: photoURL });
     });
     setUploading(false);
   };
@@ -97,6 +109,11 @@ const Gallery: FC = () => {
   const deleteItem = async (id: any) => {
     try {
       await deleteDoc(doc(galleryRef, id));
+      // Create a reference to the file to delete
+      const desertRef = ref(storage, `images/${id}`);
+
+      // Delete the file
+      await deleteObject(desertRef);
     } catch (error) {
       console.log('🚀 ~ file: index.tsx ~ line 44 ~ error', error);
     }
