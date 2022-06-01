@@ -1,5 +1,5 @@
 import { IonCard, IonImg, IonCardHeader, IonCardTitle, IonCardContent } from '@ionic/react';
-import { PROJECTS_PAGE, STEPS_PAGE } from '../../../app/routes';
+import { PROJECTS_PAGE, HOUSES_PAGE } from '../../../app/routes';
 import '../../../global.css';
 
 interface ProjectCardProps {
@@ -8,16 +8,14 @@ interface ProjectCardProps {
     name: string;
     description: string;
     imageURL: string;
-    progress?: number;
   };
 }
 
 const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => (
-  <IonCard color="white" routerLink={`${PROJECTS_PAGE}/${project.NO_ID_FIELD}${STEPS_PAGE}`}>
+  <IonCard color="white" routerLink={`${PROJECTS_PAGE}/${project.NO_ID_FIELD}${HOUSES_PAGE}`}>
     <IonImg src={project.imageURL} />
-    <IonCardHeader className='space-between'>
+    <IonCardHeader className="space-between">
       <IonCardTitle>{project.name}</IonCardTitle>
-      <IonCardTitle>{project.progress ?? 0}%</IonCardTitle>
     </IonCardHeader>
     <IonCardContent>{project.description}</IonCardContent>
   </IonCard>
