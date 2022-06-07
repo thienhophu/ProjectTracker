@@ -30,11 +30,11 @@ import { addDoc, collection, deleteDoc, doc, updateDoc } from 'firebase/firestor
 import { maxBy, orderBy } from 'lodash';
 import { useCallback, useMemo, useState } from 'react';
 import { useHistory, useParams } from 'react-router';
-import { GALLERY_PAGE, PROJECTS_PAGE, STEPS_PAGE } from '../../app/routes';
+import { GALLERY_PAGE, PROJECTS_PAGE, STEPS_PAGE, HOUSES_PAGE } from '../../app/routes';
 import { useFirestore, useFirestoreCollectionData, useFirestoreDocData } from 'reactfire';
 import './styles.css';
 import {
-  PERMISSION_PROJECT_DELETE,
+  PERMISSION_HOUSE_DELETE,
   PERMISSION_PROJECT_UPDATE_PROGRESS,
   PERMISSION_STEP_CREATE,
   PERMISSION_STEP_DELETE,
@@ -47,7 +47,7 @@ const SingleStep: React.FC<{
   step: any;
   onDelete: Function;
 }> = ({ step, onDelete }) => {
-  const { id } = useParams<any>();
+  const { id, houseId } = useParams<any>();
   const onClickDelete = useCallback(() => {
     onDelete(step.NO_ID_FIELD);
   }, [onDelete, step.NO_ID_FIELD]);
@@ -55,7 +55,7 @@ const SingleStep: React.FC<{
   return (
     <IonItemSliding>
       <IonItem
-        routerLink={`${PROJECTS_PAGE}/${id}${STEPS_PAGE}/${step.NO_ID_FIELD}${GALLERY_PAGE}`}
+        routerLink={`${PROJECTS_PAGE}/${id}${HOUSES_PAGE}/${houseId}${STEPS_PAGE}/${step.NO_ID_FIELD}${GALLERY_PAGE}`}
       >
         <IonThumbnail slot="start">
           <IonImg src="https://thumbor.forbes.com/thumbor/fit-in/900x510/https://www.forbes.com/advisor/wp-content/uploads/2021/05/featured-image-cost-of-new-home.jpeg.jpg" />
@@ -85,7 +85,7 @@ const SingleStep: React.FC<{
 const Steps: React.FC = () => {
   const [enableReorder, setEnableReorder] = useState(false);
   const firestore = useFirestore();
-  const { id } = useParams<any>();
+  const { id, houseId } = useParams<any>();
   const { goBack } = useHistory();
   const [present] = useIonAlert();
   const [createStepAlert] = useIonAlert();
@@ -96,11 +96,11 @@ const Steps: React.FC = () => {
     permission: PERMISSION_PROJECT_UPDATE_PROGRESS,
   });
 
-  const projectRef = doc(firestore, 'projects', id);
-  const stepRef = collection(firestore, `projects/${id}/steps`);
+  const houseRef = doc(firestore, `projects/${id}/houses`, houseId);
+  const stepRef = collection(firestore, `projects/${id}/houses/${houseId}/steps`);
 
   const { status, data: stepsData } = useFirestoreCollectionData(stepRef);
-  const { data: projectData } = useFirestoreDocData(projectRef);
+  const { data: houseData } = useFirestoreDocData(houseRef);
 
   const orderedSteps = useMemo(() => orderBy(stepsData, 'order'), [stepsData]);
 
@@ -113,23 +113,23 @@ const Steps: React.FC = () => {
   const updateStepsOrder = useCallback(
     async (steps) => {
       await steps.forEach(async (stepId: string, index: number) => {
-        await updateDoc(doc(firestore, `projects/${id}/steps`, stepId), {
+        await updateDoc(doc(stepRef, stepId), {
           order: index,
         });
       });
     },
-    [firestore, id],
+    [stepRef],
   );
 
   const deleteStep = useCallback(
     async (stepId) => {
-      await deleteDoc(doc(firestore, `projects/${id}/steps`, stepId));
+      await deleteDoc(doc(stepRef, stepId));
       const newSteps = orderedSteps
         .filter((step) => step.NO_ID_FIELD !== stepId)
         .map((result: any) => result.NO_ID_FIELD);
       await updateStepsOrder(newSteps);
     },
-    [firestore, id, orderedSteps, updateStepsOrder],
+    [orderedSteps, stepRef, updateStepsOrder],
   );
 
   const doReorder = useCallback(
@@ -143,7 +143,7 @@ const Steps: React.FC = () => {
     [orderedSteps, updateStepsOrder],
   );
 
-  const onDeleteProject = useCallback(() => {
+  const onDeleteHouse = useCallback(() => {
     present({
       header: 'Delete',
       message: 'Are you sure?',
@@ -153,18 +153,17 @@ const Steps: React.FC = () => {
           text: 'Delete',
           role: 'destructive',
           handler: async () => {
-            await deleteDoc(projectRef);
+            await deleteDoc(houseRef);
             goBack();
           },
         },
       ],
     });
-  }, [projectRef, goBack, present]);
+  }, [present, houseRef, goBack]);
 
   const onCreateStep = useCallback(() => {
     createStepAlert({
-      header: 'Delete',
-      message: 'Are you sure?',
+      header: 'Create Step',
       inputs: [
         {
           name: 'name',
@@ -247,7 +246,7 @@ const Steps: React.FC = () => {
 
   const isLoading = status === 'loading';
 
-  if (!stepsData || isLoading || !projectData) {
+  if (!stepsData || isLoading || !houseData) {
     return <IonLoading isOpen />;
   }
 
@@ -273,7 +272,7 @@ const Steps: React.FC = () => {
           onDidDismiss={hideProjectProgressModal}
         >
           <IonHeader className="px-3 pt-2">
-            <b>Progress {projectData.progress}%</b>
+            <b>Progress {houseData.progress ?? 0}%</b>
           </IonHeader>
           <IonContent>
             <IonRange
@@ -282,16 +281,16 @@ const Steps: React.FC = () => {
               max={100}
               pin
               color="secondary"
-              value={projectData.progress}
+              value={houseData.progress}
               onIonChange={(e) => onSaveProgress(e.detail.value)}
             />
           </IonContent>
         </IonModal>
         <IonList>
           <IonListHeader lines="inset" className="mb-8">
-            <IonLabel>{projectData.name}</IonLabel>
+            <IonLabel>{houseData.name}</IonLabel>
             <IonLabel onClick={onUpdateProjectProgress} className="text-right pr-8">
-              {projectData.progress}%
+              {houseData.progress ?? 0}%
             </IonLabel>
           </IonListHeader>
 
@@ -306,9 +305,9 @@ const Steps: React.FC = () => {
             Create Step
           </IonButton>
         </PermissionBox>
-        <PermissionBox has={PERMISSION_PROJECT_DELETE}>
-          <IonButton expand="full" color="danger" onClick={onDeleteProject}>
-            Delete Project
+        <PermissionBox has={PERMISSION_HOUSE_DELETE}>
+          <IonButton expand="full" color="danger" onClick={onDeleteHouse}>
+            Delete House
           </IonButton>
         </PermissionBox>
       </IonContent>

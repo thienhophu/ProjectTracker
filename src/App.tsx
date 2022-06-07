@@ -27,15 +27,14 @@ import './theme/tailwind.css';
 import { Provider } from 'react-redux';
 import { store } from './app/store';
 import Steps from './pages/Steps';
-import CreateProject from './pages/CreateProject';
 import {
   DASHBOARD_PAGE,
   GALLERY_PAGE,
   STEPS_PAGE,
-  CREATE_PROJECT,
   PROJECTS_PAGE,
   REGISTER,
   COMMENTS_PAGE,
+  HOUSES_PAGE,
 } from './app/routes';
 import Gallery from './pages/Gallery';
 import Login from './pages/Login';
@@ -47,6 +46,7 @@ import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 import Comments from './pages/Comments';
+import Houses from './pages/Houses';
 
 setupIonicReact({
   mode: 'ios',
@@ -72,16 +72,20 @@ const App: React.FC = () => {
                 <IonRouterOutlet>
                   <AuthCheck fallback={<Login />}>
                     <Route exact path={DASHBOARD_PAGE} component={Projects} />
-                    <Route exact path={CREATE_PROJECT} component={CreateProject} />
-                    <Route exact path={`${PROJECTS_PAGE}/:id${STEPS_PAGE}`} component={Steps} />
+                    <Route exact path={`${PROJECTS_PAGE}/:id${HOUSES_PAGE}`} component={Houses} />
                     <Route
                       exact
-                      path={`${PROJECTS_PAGE}/:id${STEPS_PAGE}/:stepId${GALLERY_PAGE}`}
+                      path={`${PROJECTS_PAGE}/:id${HOUSES_PAGE}/:houseId${STEPS_PAGE}`}
+                      component={Steps}
+                    />
+                    <Route
+                      exact
+                      path={`${PROJECTS_PAGE}/:id${HOUSES_PAGE}/:houseId${STEPS_PAGE}/:stepId${GALLERY_PAGE}`}
                       component={Gallery}
                     />
                     <Route
                       exact
-                      path={`${PROJECTS_PAGE}/:id${STEPS_PAGE}/:stepId${GALLERY_PAGE}/:imageId${COMMENTS_PAGE}`}
+                      path={`${PROJECTS_PAGE}/:id${HOUSES_PAGE}/:houseId${STEPS_PAGE}/:stepId${GALLERY_PAGE}/:imageId${COMMENTS_PAGE}`}
                       component={Comments}
                     />
                     <Redirect exact from="/" to={DASHBOARD_PAGE} />

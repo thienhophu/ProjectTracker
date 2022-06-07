@@ -82,19 +82,22 @@ const Gallery: FC = () => {
   const firestore = useFirestore();
   const [uploading, setUploading] = useState(false);
   const { getPhotos } = usePhotoGallery();
-  const { id, stepId } = useParams<any>();
+  const { id, houseId, stepId } = useParams<any>();
   const storage = useStorage();
 
-  const stepRef = doc(firestore, `projects/${id}/steps/${stepId}`);
+  const stepRef = doc(firestore, `projects/${id}/houses/${houseId}/steps/${stepId}`);
   const { data: step } = useFirestoreDocData(stepRef);
-  const galleryRef = collection(firestore, `projects/${id}/steps/${stepId}/gallery`);
+  const galleryRef = collection(
+    firestore,
+    `projects/${id}/houses/${houseId}/steps/${stepId}/gallery`,
+  );
   const { status, data: galleryData } = useFirestoreCollectionData(galleryRef);
 
   const uploadPhoto = async () => {
     const photos = await getPhotos();
     setUploading(true);
-    photos.forEach(async (photo) => {
-      const fileName = new Date().getTime() + '.jpeg';
+    photos.forEach(async (photo, index) => {
+      const fileName = new Date().getTime() + `${index}.jpeg`;
       const response = await fetch(photo.webPath!);
       const blob = await response.blob();
       const newRef = ref(storage, `images/${fileName}`);

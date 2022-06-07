@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import {
   IonContent,
   IonToolbar,
@@ -9,17 +9,20 @@ import {
   IonButton,
   IonPage,
   IonLoading,
+  useIonAlert,
+  useIonToast,
 } from '@ionic/react';
 import { useFirestore, useFirestoreCollectionData } from 'reactfire';
-import { collection } from '@firebase/firestore';
-import { CREATE_PROJECT } from '../../app/routes';
-import ProjectCard from './components/ProjectCard';
+import { collection, addDoc } from '@firebase/firestore';
 import { logout } from '../../services/auth';
 import { useDispatch } from 'react-redux';
 import { PERMISSION_PROJECT_CREATE } from '../../data/roles';
+import ProjectCard from './components/ProjectCard';
 import PermissionBox from '../../components/PermissionBox';
 
 const Projects: React.FC = () => {
+  const [createStepAlert] = useIonAlert();
+  const [presentCreateStepToast] = useIonToast();
   const dispatch = useDispatch();
   const firestore = useFirestore();
   const ref = collection(firestore, 'projects');
@@ -30,6 +33,62 @@ const Projects: React.FC = () => {
   const logOut = async () => {
     dispatch(logout());
   };
+
+  const onCreateProject = useCallback(() => {
+    createStepAlert({
+      header: 'Create Project',
+      inputs: [
+        {
+          name: 'name',
+          placeholder: 'Name',
+          type: 'text',
+          attributes: {
+            autoComplete: 'none',
+          },
+        },
+        {
+          name: 'description',
+          placeholder: 'Description',
+          type: 'textarea',
+        },
+      ],
+      buttons: [
+        { text: 'Cancel', role: 'destructive' },
+        {
+          text: 'Create',
+          handler: async ({ name, description }) => {
+            if (!name || !description) {
+              presentCreateStepToast({
+                message: 'All fields must be entered!',
+                color: 'danger',
+                duration: 2000,
+              });
+              return;
+            }
+            try {
+              await addDoc(ref, {
+                name,
+                description,
+                imageURL:
+                  'https://thumbor.forbes.com/thumbor/fit-in/900x510/https://www.forbes.com/advisor/wp-content/uploads/2021/05/featured-image-cost-of-new-home.jpeg.jpg',
+              });
+              presentCreateStepToast({
+                message: 'New Project created!',
+                color: 'success',
+                duration: 2000,
+              });
+            } catch {
+              presentCreateStepToast({
+                message: 'Unable to create a project',
+                color: 'danger',
+                duration: 2000,
+              });
+            }
+          },
+        },
+      ],
+    });
+  }, [presentCreateStepToast, createStepAlert, ref]);
 
   if (!projects || isLoading) {
     return <IonLoading isOpen />;
@@ -48,7 +107,7 @@ const Projects: React.FC = () => {
 
           <IonButtons slot="end">
             <PermissionBox has={PERMISSION_PROJECT_CREATE}>
-              <IonButton routerLink={CREATE_PROJECT}>
+              <IonButton onClick={onCreateProject}>
                 <IonLabel>Create</IonLabel>
               </IonButton>
             </PermissionBox>
