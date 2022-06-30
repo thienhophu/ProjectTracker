@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "729759911657",
+    "firebase_url": "https://project-tracker-620a6-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "project-tracker-620a6",
+    "storage_bucket": "project-tracker-620a6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:729759911657:android:afad31d912b4aa4ac46a78",
+        "android_client_info": {
+          "package_name": "au.projecttracker.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "729759911657-0fr59n5a4h9qdh9l5i31ie0nm3gua0vd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBQX3jyaKGeXbwrXwmwhcEI7e2jw3jgv6c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "729759911657-0fr59n5a4h9qdh9l5i31ie0nm3gua0vd.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "729759911657-njs10uv6b28bcatq5rl6v58ootr09qgp.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "au.projecttracker.app"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
