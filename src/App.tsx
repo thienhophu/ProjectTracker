@@ -46,6 +46,7 @@ import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 import Comments from './pages/Comments';
+import usePushNotification from './hooks/usePushNotification';
 
 setupIonicReact({
   mode: 'ios',
@@ -56,6 +57,8 @@ const App: React.FC = () => {
   const auth = getAuth(firebaseApp);
   const firestore = getFirestore(firebaseApp);
   const storage = getStorage(firebaseApp);
+
+  usePushNotification();
 
   return (
     <Provider store={store}>
