@@ -47,6 +47,7 @@ import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 import Comments from './pages/Comments';
 import Houses from './pages/Houses';
+import usePushNotification from './hooks/usePushNotification';
 
 setupIonicReact({
   mode: 'ios',
@@ -57,6 +58,8 @@ const App: React.FC = () => {
   const auth = getAuth(firebaseApp);
   const firestore = getFirestore(firebaseApp);
   const storage = getStorage(firebaseApp);
+
+  usePushNotification();
 
   if (auth && firestore && storage) {
     (async () => await SplashScreen.hide())();
