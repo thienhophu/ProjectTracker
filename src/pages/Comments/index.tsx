@@ -24,11 +24,11 @@ import { useParams } from 'react-router';
 import { addDoc, collection, doc, Timestamp, query, where } from 'firebase/firestore';
 import { FC, useCallback, useMemo, useRef, useState } from 'react';
 import { formatDistanceToNow } from 'date-fns';
+import { orderBy } from 'lodash';
 
 import { getCurrentUserData } from '../../features/auth/authSlice';
 import { useAppSelector } from '../../app/hooks';
 import { Comment } from '../../data/comment';
-import { orderBy } from 'lodash';
 
 const SingleComment: FC<{ comment: Comment }> = ({ comment }) => {
   return (
@@ -68,13 +68,13 @@ const CommentSkeletons: FC = () => {
 const Comments: FC = () => {
   const firestore = useFirestore();
   const currentUser = useAppSelector(getCurrentUserData);
-  const { id, stepId, imageId } = useParams<any>();
+  const { houseId, stepId, imageId } = useParams<any>();
   const [showModal, setShowModal] = useState(false);
   const [didLoadImage, setDidLoadImage] = useState(false);
   const [currentComment, setCurrentComment] = useState(null);
   const contentRef: any = useRef();
 
-  const imageRef = doc(firestore, `projects/${id}/steps/${stepId}/gallery`, imageId);
+  const imageRef = doc(firestore, `houses/${houseId}/steps/${stepId}/gallery`, imageId);
   const { status, data: image } = useFirestoreDocDataOnce(imageRef);
 
   const commentRef = collection(firestore, 'comments');
@@ -82,12 +82,12 @@ const Comments: FC = () => {
     query(commentRef, where('model_type', '==', 'gallery'), where('model_id', 'in', [imageId])),
   );
 
-  const isLoadingComments = useMemo(() => commentStatus === 'loading', [commentStatus]);
-
   const orderedComments = useMemo(
     () => orderBy(comments, 'created_at.seconds', 'desc'),
     [comments],
   );
+
+  const isLoadingComments = useMemo(() => commentStatus === 'loading', [commentStatus]);
 
   const openAddCommentModal = useCallback(() => {
     setShowModal(true);

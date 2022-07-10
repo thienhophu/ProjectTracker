@@ -5,11 +5,15 @@ import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import reportWebVitals from './reportWebVitals';
 import { FirebaseAppProvider } from 'reactfire';
 import { config as firebaseConfig } from './app/firebaseConfig';
+import { Provider } from 'react-redux';
+import { store } from './app/store';
 
 ReactDOM.render(
   <React.StrictMode>
     <FirebaseAppProvider firebaseConfig={firebaseConfig}>
-      <App />
+      <Provider store={store}>
+        <App />
+      </Provider>
     </FirebaseAppProvider>
   </React.StrictMode>,
   document.getElementById('root'),

@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useDispatch } from 'react-redux';
 import {
   IonContent,
   IonHeader,
@@ -12,12 +11,13 @@ import {
   IonList,
   useIonLoading,
 } from '@ionic/react';
-import { login } from '../services/auth';
-import { DASHBOARD_PAGE, REGISTER } from '../app/routes';
 import { useHistory } from 'react-router';
+import { useAppDispatch } from '../app/hooks';
+import { login } from '../services/auth';
+import { PROJECTS_PAGE, REGISTER } from '../app/routes';
 
 const Login: React.FC = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const { push } = useHistory();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -29,7 +29,7 @@ const Login: React.FC = () => {
     });
     await dispatch(login(username, password));
     await dismissLoading();
-    push(DASHBOARD_PAGE);
+    push(PROJECTS_PAGE);
   };
 
   return (

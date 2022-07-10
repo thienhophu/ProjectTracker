@@ -25,15 +25,27 @@ import {
   IonNote,
   IonRange,
   IonModal,
+  IonAvatar,
+  IonCheckbox,
 } from '@ionic/react';
-import { addDoc, collection, deleteDoc, doc, updateDoc } from 'firebase/firestore';
-import { maxBy, orderBy } from 'lodash';
-import { useCallback, useMemo, useState } from 'react';
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  updateDoc,
+  query,
+  orderBy,
+  where,
+} from 'firebase/firestore';
+import { maxBy } from 'lodash';
+import { useCallback, useEffect, useMemo, useState, useRef } from 'react';
 import { useHistory, useParams } from 'react-router';
-import { GALLERY_PAGE, PROJECTS_PAGE, STEPS_PAGE, HOUSES_PAGE } from '../../app/routes';
+import { GALLERY_PAGE, route } from '../../app/routes';
 import { useFirestore, useFirestoreCollectionData, useFirestoreDocData } from 'reactfire';
 import './styles.css';
 import {
+  PERMISSION_HOUSE_ASSIGNED_USERS,
   PERMISSION_HOUSE_DELETE,
   PERMISSION_PROJECT_UPDATE_PROGRESS,
   PERMISSION_STEP_CREATE,
@@ -41,22 +53,21 @@ import {
   PERMISSION_STEP_REORDER,
 } from '../../data/roles';
 import PermissionBox from '../../components/PermissionBox';
-import { useCurrentUserPermission } from '../../app/hooks';
+import { useAppSelector, useCurrentUserPermission } from '../../app/hooks';
+import { getCurrentUserData } from '../../features/auth/authSlice';
 
 const SingleStep: React.FC<{
   step: any;
   onDelete: Function;
 }> = ({ step, onDelete }) => {
-  const { id, houseId } = useParams<any>();
+  const { houseId } = useParams<any>();
   const onClickDelete = useCallback(() => {
     onDelete(step.NO_ID_FIELD);
   }, [onDelete, step.NO_ID_FIELD]);
 
   return (
     <IonItemSliding>
-      <IonItem
-        routerLink={`${PROJECTS_PAGE}/${id}${HOUSES_PAGE}/${houseId}${STEPS_PAGE}/${step.NO_ID_FIELD}${GALLERY_PAGE}`}
-      >
+      <IonItem routerLink={route(GALLERY_PAGE, { houseId, stepId: step.NO_ID_FIELD })}>
         <IonThumbnail slot="start">
           <IonImg src="https://thumbor.forbes.com/thumbor/fit-in/900x510/https://www.forbes.com/advisor/wp-content/uploads/2021/05/featured-image-cost-of-new-home.jpeg.jpg" />
         </IonThumbnail>
@@ -83,26 +94,31 @@ const SingleStep: React.FC<{
 };
 
 const Steps: React.FC = () => {
-  const [enableReorder, setEnableReorder] = useState(false);
   const firestore = useFirestore();
-  const { id, houseId } = useParams<any>();
+  const currentUser = useAppSelector(getCurrentUserData);
+  const { houseId } = useParams<any>();
   const { goBack } = useHistory();
   const [present] = useIonAlert();
   const [createStepAlert] = useIonAlert();
   const [presentCreateStepToast] = useIonToast();
+  const [enableReorder, setEnableReorder] = useState(false);
   const [showProgressModal, setShowProgressModal] = useState(false);
+  const accessUsersModal = useRef<HTMLIonModalElement>(null);
 
   const ableToUpdateProjectProgress = useCurrentUserPermission({
     permission: PERMISSION_PROJECT_UPDATE_PROGRESS,
   });
 
-  const houseRef = doc(firestore, `projects/${id}/houses`, houseId);
-  const stepRef = collection(firestore, `projects/${id}/houses/${houseId}/steps`);
+  const userRef = collection(firestore, 'users');
+  const houseRef = doc(firestore, 'houses', houseId);
+  const stepRef = collection(firestore, `houses/${houseId}/steps`);
 
-  const { status, data: stepsData } = useFirestoreCollectionData(stepRef);
+  const { data: usersData } = useFirestoreCollectionData(
+    query(userRef, where('id', '!=', currentUser.id)),
+  );
+  const { status, data: stepsData } = useFirestoreCollectionData(query(stepRef, orderBy('order')));
   const { data: houseData } = useFirestoreDocData(houseRef);
-
-  const orderedSteps = useMemo(() => orderBy(stepsData, 'order'), [stepsData]);
+  const [prepareAccessUsers, setPrepareAccessUsers] = useState<any>(houseData?.accessUsers || []);
 
   const reorderText = enableReorder ? 'Done' : 'Re-order';
 
@@ -124,23 +140,23 @@ const Steps: React.FC = () => {
   const deleteStep = useCallback(
     async (stepId) => {
       await deleteDoc(doc(stepRef, stepId));
-      const newSteps = orderedSteps
+      const newSteps = stepsData
         .filter((step) => step.NO_ID_FIELD !== stepId)
         .map((result: any) => result.NO_ID_FIELD);
       await updateStepsOrder(newSteps);
     },
-    [orderedSteps, stepRef, updateStepsOrder],
+    [stepsData, stepRef, updateStepsOrder],
   );
 
   const doReorder = useCallback(
     async (event: CustomEvent) => {
       const orderedResultStepIds = event.detail
-        .complete(orderedSteps)
+        .complete(stepsData)
         .map((result: any) => result.NO_ID_FIELD);
 
       await updateStepsOrder(orderedResultStepIds);
     },
-    [orderedSteps, updateStepsOrder],
+    [stepsData, updateStepsOrder],
   );
 
   const onDeleteHouse = useCallback(() => {
@@ -220,13 +236,20 @@ const Steps: React.FC = () => {
     });
   }, [presentCreateStepToast, createStepAlert, stepRef, stepsData]);
 
+  const onAssignUsers = useCallback(async () => {
+    await updateDoc(houseRef, {
+      accessUsers: prepareAccessUsers,
+    });
+    accessUsersModal.current?.dismiss();
+  }, [houseRef, prepareAccessUsers]);
+
   const onSaveProgress = useCallback(
     async (value) => {
-      await updateDoc(doc(firestore, `projects`, id), {
+      await updateDoc(houseRef, {
         progress: value,
       });
     },
-    [firestore, id],
+    [houseRef],
   );
 
   const showProjectProgressModal = useCallback(() => {
@@ -244,9 +267,13 @@ const Steps: React.FC = () => {
     showProjectProgressModal();
   }, [ableToUpdateProjectProgress, showProjectProgressModal]);
 
-  const isLoading = status === 'loading';
+  const isLoading = useMemo(() => status === 'loading', [status]);
 
-  if (!stepsData || isLoading || !houseData) {
+  useEffect(() => {
+    setPrepareAccessUsers(houseData?.accessUsers || []);
+  }, [houseData]);
+
+  if (isLoading || !houseData) {
     return <IonLoading isOpen />;
   }
 
@@ -266,6 +293,35 @@ const Steps: React.FC = () => {
         </IonToolbar>
       </IonHeader>
       <IonContent>
+        <IonList>
+          <IonListHeader lines="inset" className="mb-8">
+            <IonLabel>{houseData.name}</IonLabel>
+            <IonLabel onClick={onUpdateProjectProgress} className="text-right pr-8">
+              {houseData.progress ?? 0}%
+            </IonLabel>
+          </IonListHeader>
+
+          <IonReorderGroup disabled={!enableReorder} onIonItemReorder={doReorder}>
+            {stepsData.map((step: any) => (
+              <SingleStep key={step.NO_ID_FIELD} step={step} onDelete={deleteStep} />
+            ))}
+          </IonReorderGroup>
+        </IonList>
+        <PermissionBox has={PERMISSION_STEP_CREATE}>
+          <IonButton expand="full" onClick={onCreateStep} className="mt-8">
+            Create Step
+          </IonButton>
+        </PermissionBox>
+        <PermissionBox has={PERMISSION_HOUSE_ASSIGNED_USERS}>
+          <IonButton id="assigned-modal" expand="full">
+            Assign Users
+          </IonButton>
+        </PermissionBox>
+        <PermissionBox has={PERMISSION_HOUSE_DELETE}>
+          <IonButton expand="full" color="danger" onClick={onDeleteHouse}>
+            Delete House
+          </IonButton>
+        </PermissionBox>
         <IonModal
           className="progress-modal"
           isOpen={showProgressModal}
@@ -286,30 +342,49 @@ const Steps: React.FC = () => {
             />
           </IonContent>
         </IonModal>
-        <IonList>
-          <IonListHeader lines="inset" className="mb-8">
-            <IonLabel>{houseData.name}</IonLabel>
-            <IonLabel onClick={onUpdateProjectProgress} className="text-right pr-8">
-              {houseData.progress ?? 0}%
-            </IonLabel>
-          </IonListHeader>
-
-          <IonReorderGroup disabled={!enableReorder} onIonItemReorder={doReorder}>
-            {orderedSteps.map((step: any) => (
-              <SingleStep key={step.NO_ID_FIELD} step={step} onDelete={deleteStep} />
-            ))}
-          </IonReorderGroup>
-        </IonList>
-        <PermissionBox has={PERMISSION_STEP_CREATE}>
-          <IonButton expand="full" onClick={onCreateStep} className="mt-8">
-            Create Step
-          </IonButton>
-        </PermissionBox>
-        <PermissionBox has={PERMISSION_HOUSE_DELETE}>
-          <IonButton expand="full" color="danger" onClick={onDeleteHouse}>
-            Delete House
-          </IonButton>
-        </PermissionBox>
+        <IonModal
+          ref={accessUsersModal}
+          trigger="assigned-modal"
+          initialBreakpoint={0.5}
+          breakpoints={[0, 0.25, 0.5, 0.75]}
+        >
+          <IonHeader>
+            <IonToolbar>
+              <IonTitle>Assigned Users</IonTitle>
+              <IonButtons slot="end">
+                <IonButton onClick={() => onAssignUsers()}>Save</IonButton>
+              </IonButtons>
+            </IonToolbar>
+          </IonHeader>
+          <IonContent className="ion-padding">
+            <IonList>
+              {usersData.map((user) => (
+                <IonItem key={user.id}>
+                  <IonAvatar slot="start">
+                    <IonImg src="https://i.pravatar.cc/300?u=a" />
+                  </IonAvatar>
+                  <IonLabel {...{ for: user.id }}>
+                    <h2>{user.displayName}</h2>
+                  </IonLabel>
+                  <IonCheckbox
+                    id={user.id}
+                    value={user.id}
+                    checked={prepareAccessUsers.includes(user.id)}
+                    onIonChange={(ev) => {
+                      if (ev.detail.checked) {
+                        setPrepareAccessUsers((users: any) => [...users, ev.detail.value]);
+                      } else {
+                        setPrepareAccessUsers((users: any) =>
+                          users.filter((u: any) => u !== ev.detail.value),
+                        );
+                      }
+                    }}
+                  ></IonCheckbox>
+                </IonItem>
+              ))}
+            </IonList>
+          </IonContent>
+        </IonModal>
       </IonContent>
     </IonPage>
   );

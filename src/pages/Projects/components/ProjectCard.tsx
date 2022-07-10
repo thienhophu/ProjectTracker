@@ -1,5 +1,5 @@
 import { IonCard, IonImg, IonCardHeader, IonCardTitle, IonCardContent } from '@ionic/react';
-import { PROJECTS_PAGE, HOUSES_PAGE } from '../../../app/routes';
+import { HOUSES_PAGE, route } from '../../../app/routes';
 import '../../../global.css';
 
 interface ProjectCardProps {
@@ -12,7 +12,7 @@ interface ProjectCardProps {
 }
 
 const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => (
-  <IonCard color="white" routerLink={`${PROJECTS_PAGE}/${project.NO_ID_FIELD}${HOUSES_PAGE}`}>
+  <IonCard color="white" routerLink={route(HOUSES_PAGE, { projectId: project.NO_ID_FIELD })}>
     <IonImg src={project.imageURL} />
     <IonCardHeader className="space-between">
       <IonCardTitle>{project.name}</IonCardTitle>

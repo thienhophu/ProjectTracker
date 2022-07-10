@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useDispatch } from 'react-redux';
 import {
   IonContent,
   IonHeader,
@@ -17,12 +16,13 @@ import {
   useIonToast,
   useIonLoading,
 } from '@ionic/react';
+import { useHistory } from 'react-router';
+import { useAppDispatch } from '../app/hooks';
 import { register } from '../services/auth';
 import { LOGIN } from '../app/routes';
-import { useHistory } from 'react-router';
 
 const Register: React.FC = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const [displayName, setDisplayName] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
