@@ -29,13 +29,13 @@ import { setDoc, deleteDoc, doc, collection, updateDoc } from 'firebase/firestor
 import { ref, uploadBytesResumable, getDownloadURL, deleteObject } from 'firebase/storage';
 import { FC, useCallback, useState } from 'react';
 import { PERMISSION_GALLERY_DELETE, PERMISSION_GALLERY_UPLOAD } from '../../data/roles';
-import { COMMENTS_PAGE, GALLERY_PAGE, PROJECTS_PAGE, STEPS_PAGE } from '../../app/routes';
+import { COMMENTS_PAGE, route } from '../../app/routes';
 import PermissionBox from '../../components/PermissionBox';
 
 const SingleImage: FC<{ image: any; onDelete: Function }> = ({ image, onDelete }) => {
   const [present] = useIonAlert();
   const { push } = useHistory();
-  const { id, stepId } = useParams<any>();
+  const { houseId, stepId } = useParams<any>();
 
   const onClickDelete = useCallback(() => {
     present({
@@ -56,9 +56,13 @@ const SingleImage: FC<{ image: any; onDelete: Function }> = ({ image, onDelete }
 
   const onClick = useCallback(() => {
     push(
-      `${PROJECTS_PAGE}/${id}${STEPS_PAGE}/${stepId}${GALLERY_PAGE}/${image.NO_ID_FIELD}${COMMENTS_PAGE}`,
+      route(COMMENTS_PAGE, {
+        houseId,
+        stepId,
+        imageId: image.NO_ID_FIELD,
+      }),
     );
-  }, [push, stepId, id, image.NO_ID_FIELD]);
+  }, [push, houseId, stepId, image.NO_ID_FIELD]);
 
   return (
     <IonCol size="6" className="h-40">
@@ -80,17 +84,15 @@ const SingleImage: FC<{ image: any; onDelete: Function }> = ({ image, onDelete }
 
 const Gallery: FC = () => {
   const firestore = useFirestore();
+  const storage = useStorage();
   const [uploading, setUploading] = useState(false);
   const { getPhotos } = usePhotoGallery();
-  const { id, houseId, stepId } = useParams<any>();
-  const storage = useStorage();
+  const { houseId, stepId } = useParams<any>();
 
-  const stepRef = doc(firestore, `projects/${id}/houses/${houseId}/steps/${stepId}`);
+  const stepRef = doc(firestore, `houses/${houseId}/steps/${stepId}`);
+  const galleryRef = collection(firestore, `houses/${houseId}/steps/${stepId}/gallery`);
+
   const { data: step } = useFirestoreDocData(stepRef);
-  const galleryRef = collection(
-    firestore,
-    `projects/${id}/houses/${houseId}/steps/${stepId}/gallery`,
-  );
   const { status, data: galleryData } = useFirestoreCollectionData(galleryRef);
 
   const uploadPhoto = async () => {
@@ -118,7 +120,7 @@ const Gallery: FC = () => {
       // Delete the file
       await deleteObject(desertRef);
     } catch (error) {
-      console.log('🚀 ~ file: index.tsx ~ line 44 ~ error', error);
+      console.error('🚀 ~ file: index.tsx ~ line 44 ~ error', error);
     }
   };
 

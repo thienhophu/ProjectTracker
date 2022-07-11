@@ -15,15 +15,17 @@ import {
 import { useFirestore, useFirestoreCollectionData } from 'reactfire';
 import { collection, addDoc } from '@firebase/firestore';
 import { logout } from '../../services/auth';
-import { useDispatch } from 'react-redux';
 import { PERMISSION_PROJECT_CREATE } from '../../data/roles';
+import { getCurrentUserData } from '../../features/auth/authSlice';
+import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import ProjectCard from './components/ProjectCard';
 import PermissionBox from '../../components/PermissionBox';
 
 const Projects: React.FC = () => {
   const [createStepAlert] = useIonAlert();
   const [presentCreateStepToast] = useIonToast();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
+  const currentUser = useAppSelector(getCurrentUserData);
   const firestore = useFirestore();
   const ref = collection(firestore, 'projects');
 
@@ -71,6 +73,8 @@ const Projects: React.FC = () => {
                 description,
                 imageURL:
                   'https://thumbor.forbes.com/thumbor/fit-in/900x510/https://www.forbes.com/advisor/wp-content/uploads/2021/05/featured-image-cost-of-new-home.jpeg.jpg',
+                authorId: currentUser.id,
+                accessUsers: [currentUser.id],
               });
               presentCreateStepToast({
                 message: 'New Project created!',
@@ -88,7 +92,7 @@ const Projects: React.FC = () => {
         },
       ],
     });
-  }, [presentCreateStepToast, createStepAlert, ref]);
+  }, [createStepAlert, presentCreateStepToast, ref, currentUser.id]);
 
   if (!projects || isLoading) {
     return <IonLoading isOpen />;

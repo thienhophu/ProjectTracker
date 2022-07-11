@@ -14,26 +14,34 @@ import {
   useIonToast,
 } from '@ionic/react';
 import { useFirestore, useFirestoreCollectionData, useFirestoreDocData } from 'reactfire';
-import { collection, doc, addDoc, deleteDoc } from '@firebase/firestore';
+import { query, collection, doc, addDoc, deleteDoc, where } from '@firebase/firestore';
 import { useHistory, useParams } from 'react-router';
 import { PERMISSION_HOUSE_CREATE, PERMISSION_PROJECT_DELETE } from '../../data/roles';
+import { getCurrentUserData } from '../../features/auth/authSlice';
+import { useAppSelector } from '../../app/hooks';
 import HouseCard from './components/HouseCard';
 import PermissionBox from '../../components/PermissionBox';
 
 const Houses: React.FC = () => {
-  // const dispatch = useDispatch();
   const [present] = useIonAlert();
   const [createStepAlert] = useIonAlert();
   const [presentCreateStepToast] = useIonToast();
   const { goBack } = useHistory();
-  const { id } = useParams<any>();
+  const { projectId } = useParams<any>();
+  const currentUser = useAppSelector(getCurrentUserData);
   const firestore = useFirestore();
+  const houseRef = collection(firestore, 'houses');
+  const projectRef = doc(firestore, 'projects', projectId);
 
-  const projectRef = doc(firestore, 'projects', id);
-  const ref = collection(firestore, `projects/${id}/houses`);
-
-  const { status, data: houses } = useFirestoreCollectionData(ref);
   const { data: project } = useFirestoreDocData(projectRef);
+  const { status, data: houses } = useFirestoreCollectionData(
+    query(
+      houseRef,
+      where('projectId', '==', projectId),
+      where('accessUsers', 'array-contains', currentUser.id),
+    ),
+  );
+
   const isLoading = status === 'loading';
 
   const onCreateHouse = useCallback(() => {
@@ -68,12 +76,14 @@ const Houses: React.FC = () => {
               return;
             }
             try {
-              await addDoc(ref, {
+              await addDoc(houseRef, {
                 name,
                 description,
                 imageURL: 'https://wallpaperaccess.com/full/1126753.jpg',
-                projectId: id,
+                projectId: projectId,
                 steps: [],
+                authorId: currentUser.id,
+                accessUsers: [currentUser.id],
               });
               presentCreateStepToast({
                 message: 'New House created!',
@@ -91,9 +101,13 @@ const Houses: React.FC = () => {
         },
       ],
     });
-  }, [createStepAlert, presentCreateStepToast, ref, id]);
+  }, [createStepAlert, presentCreateStepToast, houseRef, projectId, currentUser.id]);
 
   const onDeleteProject = useCallback(() => {
+    if (!projectRef) {
+      return;
+    }
+
     present({
       header: 'Delete',
       message: 'Are you sure?',
@@ -111,7 +125,7 @@ const Houses: React.FC = () => {
     });
   }, [present, projectRef, goBack]);
 
-  if (!houses || isLoading || !project) {
+  if (!project || isLoading) {
     return <IonLoading isOpen />;
   }
 
@@ -139,11 +153,13 @@ const Houses: React.FC = () => {
           <HouseCard key={index} house={house} />
         ))}
       </IonContent>
-      <PermissionBox has={PERMISSION_PROJECT_DELETE}>
-        <IonButton expand="full" color="danger" onClick={onDeleteProject}>
-          Delete Project
-        </IonButton>
-      </PermissionBox>
+      {project && (
+        <PermissionBox has={PERMISSION_PROJECT_DELETE}>
+          <IonButton expand="full" color="danger" onClick={onDeleteProject}>
+            Delete Project
+          </IonButton>
+        </PermissionBox>
+      )}
     </IonPage>
   );
 };
