@@ -11,6 +11,7 @@ import {
   IonRouterLink,
   IonList,
   useIonLoading,
+  useIonToast,
 } from '@ionic/react';
 import { login } from '../services/auth';
 import { DASHBOARD_PAGE, REGISTER } from '../app/routes';
@@ -22,14 +23,21 @@ const Login: React.FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [presentLoading, dismissLoading] = useIonLoading();
+  const [presentError] = useIonToast();
 
   const loginUser = async () => {
     presentLoading({
       message: 'Loading...',
     });
-    await dispatch(login(username, password));
+    const error = await dispatch(login(username, password));
+
     await dismissLoading();
-    push(DASHBOARD_PAGE);
+
+    if (!error) {
+      push(DASHBOARD_PAGE);
+    } else {
+      presentError({ message: `${error}`, color: 'danger', duration: 2000 });
+    }
   };
 
   return (

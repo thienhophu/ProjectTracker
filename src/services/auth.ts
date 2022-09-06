@@ -13,6 +13,7 @@ import {
   SET_INITIALIZED,
   SET_USER_DATA,
 } from '../features/auth/authSlice';
+import { FirebaseError } from 'firebase/app';
 
 export const setAuthListener = () => (dispatch: any, state: any) => {
   onAuthStateChanged(auth, (user) => {
@@ -26,17 +27,17 @@ export const setAuthListener = () => (dispatch: any, state: any) => {
 };
 
 export const login = (username: string, password: string) => async (dispatch: any, state: any) => {
-  await signInWithEmailAndPassword(auth, username, password)
+  const result = await signInWithEmailAndPassword(auth, username, password)
     .then((userCredential) => {
       // Signed in
       dispatch(LOGIN({ user: userCredential.user.toJSON() }));
       dispatch(getCurrentUserData());
     })
-    .catch((error) => {
-      console.error('🚀 ~ file: auth.ts ~ login ~ error', error);
+    .catch((error: FirebaseError) => {
+      return error.code;
     });
 
-  return state().auth.userData;
+  return result;
 };
 
 export const logout = () => async (dispatch: any) => {
@@ -49,7 +50,8 @@ export const logout = () => async (dispatch: any) => {
 };
 
 export const register =
-  (displayName: string, username: string, password: string, role: string) => async (dispatch: any) => {
+  (displayName: string, username: string, password: string, role: string) =>
+  async (dispatch: any) => {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, username, password);
 
