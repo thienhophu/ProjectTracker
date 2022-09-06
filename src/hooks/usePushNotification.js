@@ -1,5 +1,6 @@
 import { useCallback, useEffect } from 'react';
 import { PushNotifications } from '@capacitor/push-notifications';
+import { isPlatform } from '@ionic/react';
 
 const usePushNotification = () => {
   const addListeners = useCallback(async () => {
@@ -39,10 +40,18 @@ const usePushNotification = () => {
   }, []);
 
   useEffect(() => {
+    if (isPlatform('mobileweb')) {
+      return;
+    }
+
     addListeners();
     registerNotifications();
 
     return () => {
+      if (isPlatform('mobileweb')) {
+        return;
+      }
+
       PushNotifications.removeAllListeners();
     };
   }, [addListeners, registerNotifications]);
