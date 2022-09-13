@@ -13,9 +13,9 @@ const AuthCheck = ({
 
   const { status, data: signInCheckResult } = useSigninCheck();
 
-  if (status === 'loading') {
-    return <IonLoading isOpen message={'Please wait...'} />;
-  }
+  // if (status === 'loading') {
+  //   return <IonLoading isOpen message={'Please wait...'} />;
+  // }
 
   if (!children) {
     throw new Error('Children must be provided');
