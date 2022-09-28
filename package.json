@@ -3,17 +3,16 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
-    "@capacitor/android": "4.2.0",
-    "@capacitor/app": "4.0.1",
-    "@capacitor/camera": "4.1.1",
-    "@capacitor/core": "4.2.0",
-    "@capacitor/haptics": "4.0.1",
-    "@capacitor/keyboard": "4.0.1",
-    "@capacitor/status-bar": "4.0.1",
-    "@capacitor/ios": "4.2.0",
-    "@capacitor/push-notifications": "4.0.1",
-    "@capacitor/splash-screen": "4.0.1",
-    "@craco/craco": "^6.4.5",
+    "@capacitor/android": "^4.3.0",
+    "@capacitor/app": "^4.0.1",
+    "@capacitor/camera": "^4.1.1",
+    "@capacitor/core": "^4.3.0",
+    "@capacitor/haptics": "^4.0.1",
+    "@capacitor/ios": "^4.3.0",
+    "@capacitor/keyboard": "^4.0.1",
+    "@capacitor/push-notifications": "^4.1.0",
+    "@capacitor/splash-screen": "^4.0.1",
+    "@capacitor/status-bar": "^4.0.1",
     "@ionic/react": "^6.2.6",
     "@ionic/react-router": "^6.2.6",
     "@reduxjs/toolkit": "^1.8.1",
@@ -55,10 +54,8 @@
   "scripts": {
     "test": "react-scripts test --transformIgnorePatterns 'node_modules/(?!(@ionic/react|@ionic/react-router|@ionic/core|@stencil/core|ionicons)/)'",
     "eject": "react-scripts eject",
-    "start": "TAILWIND_MODE=watch craco start",
-    "build": "craco build",
-    "ionic:serve": "TAILWIND_MODE=watch craco start",
-    "ionic:build": "craco build",
+    "start": "react-scripts start",
+    "build": "react-scripts build",
     "increase_version": "bundle exec fastlane ios increase_version && bundle exec fastlane android increase_version",
     "release-android-firebase": "ionic cap sync && npm run increase_version && bundle exec fastlane android firebase "
   },
@@ -81,11 +78,8 @@
     ]
   },
   "devDependencies": {
-    "@capacitor/cli": "3.4.3",
-    "@types/lodash": "^4.14.182",
-    "autoprefixer": "^10.4.4",
-    "postcss": "^8.4.12",
-    "tailwindcss": "^3.0.23"
+    "@capacitor/cli": "^4.0.0",
+    "@types/lodash": "^4.14.182"
   },
   "description": "An Ionic project"
 }
