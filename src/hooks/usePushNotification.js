@@ -40,7 +40,9 @@ const usePushNotification = () => {
   }, []);
 
   useEffect(() => {
-    if (isPlatform('mobileweb')) {
+    const isNotRealMobile = isPlatform('mobileweb') || isPlatform('desktop');
+
+    if (isNotRealMobile) {
       return;
     }
 
@@ -48,7 +50,7 @@ const usePushNotification = () => {
     registerNotifications();
 
     return () => {
-      if (isPlatform('mobileweb')) {
+      if (isNotRealMobile) {
         return;
       }
 
