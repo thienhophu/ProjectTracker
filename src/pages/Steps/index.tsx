@@ -111,7 +111,7 @@ const Steps: React.FC = () => {
   }, [setEnableReorder, enableReorder]);
 
   const updateStepsOrder = useCallback(
-    async (steps) => {
+    async (steps: any) => {
       await steps.forEach(async (stepId: string, index: number) => {
         await updateDoc(doc(stepRef, stepId), {
           order: index,
@@ -122,7 +122,7 @@ const Steps: React.FC = () => {
   );
 
   const deleteStep = useCallback(
-    async (stepId) => {
+    async (stepId: any) => {
       await deleteDoc(doc(stepRef, stepId));
       const newSteps = orderedSteps
         .filter((step) => step.NO_ID_FIELD !== stepId)
@@ -221,7 +221,7 @@ const Steps: React.FC = () => {
   }, [presentCreateStepToast, createStepAlert, stepRef, stepsData]);
 
   const onSaveProgress = useCallback(
-    async (value) => {
+    async (value: any) => {
       await updateDoc(doc(firestore, `projects`, id), {
         progress: value,
       });
